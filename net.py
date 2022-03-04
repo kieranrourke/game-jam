@@ -8,6 +8,7 @@ class Net:
         
         self.game = game
         self.image = pygame.transform.scale(image, (hgt, hgt))
+        self.image = pygame.transform.flip(self.image, True, False)
         self.height = hgt
         if direction == 'NORTH':
             self.direction = 'NORTH'
