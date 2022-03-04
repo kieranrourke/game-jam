@@ -1,16 +1,19 @@
 """Ball class for space basketball"""
 
 __date__ = '3/4/22'
-__version__ = 'V0.3'
-__author__ = 'Alexandre Marques + Cade'
+__version__ = 'V0.4'
+__author__ = 'Nucleus team'
 
 import pygame
 
 class Ball:
-    def __init__(self, ini_x: int, ini_y: int, size: int = 20) -> None: 
+    def __init__(self, game: 'Game', planets: ['Planet'], ini_x: int, 
+                 ini_y: int, size: int = 20) -> None: 
         """ Iniitiates a ball object with a size (also indicates mass). 
         No initial speed or acceleration, initial pos based on params.
         """
+        #Color constant
+        self._ORANGE = (250,131,32)
         #set size (Deafult 20)
         self._radius = size
         #set initial pos
@@ -19,54 +22,68 @@ class Ball:
         self._spd = pygame.Vector2(0,0)
         self._accel = pygame.Vector2(0,0)
         
+        #Store planets
+        self._planets = planets
+        #Store game screen
+        self._game = game
+        
+        
+        self.update()
+        
     ##TODO: Add str, repr 
         
-    def _update_spd(self) -> None:
-        """ Updates speed based on current acceleration. 
-        Should be called after acceleration calculations are done.
-        """
-        self._spd += self._accel
-    
-    def _sum_acceleration(self, planets: ['Planet']) -> 'pygame.Vector2':
+    ##Ideally, this is in a higher level class, like game/main
+    def _sum_acceleration(ball: 'Ball', planets: ['Planet']) -> 'pygame.Vector2':
         """ Returns the sum of the accelerations exerted on the ball by
         each planet in the level.
         """
-        total_accel = Vector2() #0,0
-
+        total_accel = pygame.Vector2() #0,0
+    
         for planet in planets:
-            #FIXME: Planet function name TBD
-            total_accel += planet.force_applied(self.get_pos_tup(),
-                                              self.get_mass())
+            total_accel += planet.force_applied(ball.get_pos_tup(),
+                                              ball.get_mass())
         
         return total_accel
     
-    def _update_vel(self, planets: ['Planet']) -> None:
-        """ Updates velocity based on gravitational pull of other objects. 
-        Should be called before each time the ball is moved.
-        """
-        #Updates accelaration
-        self._accel += self.sum_accelerations(planets)
-        _update_spd()
         
-    def update_pos(self, planets: ['Planet']) -> None:
+    ##Might need to set bounds on acceleration/speed/position. Sometimes crashes
+    def _update_pos(self, accel:'pygame.Vector2') -> None:
         """ Updates position based on speed of the ball (affected by planets). 
-        Should be called on each game tick while ball is in the air.
-        """        
-        _update_vel()
+        Should be called on each game tick. 
+        """   
+        #Update accel (sum of forces) -> update spd -> update position
+        self._accel += accel
+        self._spd += self._accel
         self._pos += self._pos 
+    
+    def _draw(self) -> None:
+        """Draws the ball on the screen. Should be called on each game tick.
+        """
+        ##With a few modifications, can use this to have the ball be an img
+        #self.game.screen.blit(self.image, (self.x_pos, self.y_pos))        
+        pygame.draw.circle(self._game.screen, self._ORANGE, self._pos, self._radius)
         
-    def get_mass() -> int:
+    def update(self) -> None:
+        """ Updates the ball's state and displays it. 
+        Should be called each game tick.
+        """
+        self._update_pos(self._sum_acceleration(self._planets))
+        self._draw()
+        
+    def get_mass(self) -> int:
         """ Returns the mass of the ball.
         """
         return self._radius
     
-    def get_pos() -> 'pygame.Vector2':
+    def get_pos(self) -> 'pygame.Vector2':
         """ Returns the current position of the ball as a 2D vector.
         """
         return self._pos    
     
-    def get_pos_tup() -> tuple[int, int]:
+    def get_pos_tup(self) -> tuple[int, int]:
         """ Returns the current position of the ball as a tuple 
         in the form (x, y).
         """
         return (self._pos.x, self._pos.y)
+    
+    
