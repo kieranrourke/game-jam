@@ -10,6 +10,8 @@ class Planet:
         self.game = game
         self.x_pos = x_pos 
         self.y_pos = y_pos
+        self.x_size = x_size
+        self.y_size = y_size
         self.area = math.pi * math.pow((x_size/2), 2)
 
 
