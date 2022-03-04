@@ -5,7 +5,7 @@ import math
 
 
 class Planet:
-    def __init__(self, image, game, x_size, y_size, x_pos, y_pos) -> None:
+    def __init__(self, game, image, x_size, y_size, x_pos, y_pos) -> None:
         self.image = pygame.transform.scale(image, (x_size, y_size))
         self.game = game
         self.x_pos = x_pos 
@@ -43,7 +43,7 @@ class Planet:
         return (self.x_pos/2, self.y_pos/2)
 
     
-    def pythag(pos1: tuple, pos2:tuple) -> float:
+    def pythag(self, pos1: tuple, pos2:tuple) -> float:
         """returns the distance between two points
 
         Args:

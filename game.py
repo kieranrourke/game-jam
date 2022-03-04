@@ -12,11 +12,11 @@ class Game:
     """General Game class
     """
     def __init__(self, xBound, yBound, caption, icon, background):
+        self.xBound = xBound
+        self.yBound = yBound
         self.screen = pygame.display.set_mode((self.xBound, self.yBound))
         self.caption = caption
         self.icon = icon
-        self.xBound = xBound
-        self.yBound = yBound
         self.font = pygame.font.Font('freesansbold.ttf', 64)
         self.background = background 
         self.background = pygame.transform.scale(
