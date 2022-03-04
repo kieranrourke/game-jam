@@ -1,7 +1,7 @@
 """Ball class for space basketball"""
 
 __date__ = '3/4/22'
-__version__ = 'V0.1'
+__version__ = 'V0.2'
 __author__ = 'Alexandre Marques + Cade'
 
 import pygame
