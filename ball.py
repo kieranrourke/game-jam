@@ -1,7 +1,7 @@
 """Ball class for space basketball"""
 
 __date__ = '3/4/22'
-__version__ = 'V0.2'
+__version__ = 'V0.3'
 __author__ = 'Alexandre Marques + Cade'
 
 import pygame
@@ -27,7 +27,7 @@ class Ball:
         """
         self._spd += self._accel
     
-    def _sum_acceleration(self, planets: ['Planet']) -> 'Vector2':
+    def _sum_acceleration(self, planets: ['Planet']) -> 'pygame.Vector2':
         """ Returns the sum of the accelerations exerted on the ball by
         each planet in the level.
         """
@@ -35,7 +35,8 @@ class Ball:
 
         for planet in planets:
             #FIXME: Planet function name TBD
-            total_accel += planet.get_gravity(self)
+            total_accel += planet.force_applied(self.get_pos_tup(),
+                                              self.get_mass())
         
         return total_accel
     
@@ -58,3 +59,14 @@ class Ball:
         """ Returns the mass of the ball.
         """
         return self._radius
+    
+    def get_pos() -> 'pygame.Vector2':
+        """ Returns the current position of the ball as a 2D vector.
+        """
+        return self._pos    
+    
+    def get_pos_tup() -> tuple[int, int]:
+        """ Returns the current position of the ball as a tuple 
+        in the form (x, y).
+        """
+        return (self._pos.x, self._pos.y)
