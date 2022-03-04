@@ -54,5 +54,11 @@ class Planet:
             float: distance between the points
         """
         return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[0])**2)
+    
+    def draw_planet(self) -> None:
+        """Draws the planet on the screen
+        """
+        self.game.screen.blit(self.image, (self.x_pos, self.y_pos))
+
 
         
