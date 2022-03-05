@@ -2,7 +2,7 @@ import pygame
 from planets import Planet
 from game import Game      
     
-class Rim:
+class Rim(pygame.sprite.Sprite) :
     
     def __init__(self, color, width, height, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -13,7 +13,7 @@ class Rim:
         self.rect = self.image.get_rect()
     
     
-class NetMesh:
+class NetMesh(pygame.sprite.Sprite):
     
     def __init__(self, color, width, height, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -23,7 +23,7 @@ class NetMesh:
         self.image.fill(color)
         self.rect = self.image.get_rect()            
         
-class Backboard:
+class Backboard(pygame.sprite.Sprite):
     
     def __init__(self, color, width, height, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -33,7 +33,7 @@ class Backboard:
         self.image.fill(color)
         self.rect = self.image.get_rect()         
         
-class Pole: 
+class Pole(pygame.sprite.Sprite): 
     
     def __init__(self, color, width, height, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -43,7 +43,7 @@ class Pole:
         self.image.fill(color)
         self.rect = self.image.get_rect()
 
-class Net:
+class Net(pygame.sprite.Group):
     
     def __init__(self, game, hgt: int, planet: Planet, direction: str):
         
