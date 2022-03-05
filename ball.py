@@ -1,25 +1,45 @@
 """Ball class for space basketball"""
 
 __date__ = '3/4/22'
-__version__ = 'V0.4'
+__version__ = 'V0.6'
 __author__ = 'Nucleus team'
 
 import pygame
 
-class Ball:
-    def __init__(self, game: 'Game', planets: ['Planet'], ini_x: int, 
-                 ini_y: int, size: int = 20) -> None: 
-        """ Iniitiates a ball object with a size (also indicates mass). 
-        No initial speed or acceleration, initial pos based on params.
+class Ball(pygame.sprite.Sprite):
+    ##Eventually, should not need planets as a field
+    def __init__(self, game: 'Game', sheet: 'SpriteSheet', planets: ['Planet'], 
+                 ini_x: int, ini_y: int, 
+                 size: int = 32) -> None: 
+        """ Initiates a ball object with initial speed or acceleration, 
+        initial pos based on params.
         """
-        #Color constant
+        #Superclass constructor
+        pygame.sprite.Sprite.__init__(self)
+        #size of 1 frame on the sheet
+        #for varying ball size, might complicate spritesheet loads?
+        SIZE = 32 
+        
+        #Color constant (Remove later)
         self._ORANGE = (250,131,32)
-        #set size (Deafult 20)
-        self._radius = size
+        
+        #Initialise sprite sheet variables
+        self._sheet = sheet
+        self._SHEET_OFFSETS = [(0,0),(0,32)]
+        self.image = self._sheet.image_at((self._SHEET_OFFSETS[0]), 
+                                          (SIZE, SIZE)) 
+        self._cur_offset = 0 #might remove later
+        
+        #Hitbox attributes. Mask prefered
+        self.rect = (SIZE, SIZE)
+        self._radius = SIZE/2
+        self.mask = pygame.mask.from_surface(self.image)
+        
         #set initial pos, spd, accel
         self._pos = pygame.Vector2(ini_x,ini_y)
         self._spd = pygame.Vector2(0,0)
         self._accel = pygame.Vector2(0,0)
+        
         #Set max spd/accel (absolute val. Set high to "uncap")
         self._MAX_SPD = 3.5
         self._MAX_ACCEL  = 1
@@ -28,13 +48,45 @@ class Ball:
         self._planets = planets
         #Store game screen
         self._game = game
+    
+    ##Might move to spaceJam class soon
+    def groupcollide_mask(group1: 'SpriteGroup', 
+                          group2: 'SpriteGroup') -> 'pygame.Sprite_dict':
+        """Find all sprites that collide between two groups using their masks.
+        Does not remove sprites from their groups.
+        """
+        #I wonder if collide_mask call should be converted to a bool statement
+        return pygame.sprite.groupcollide(self, group, False, False, 
+                                        pygame.sprite.collide_mask)
+    
+    def _radial_edge(self, direction: 'pygame.Vector2'):
+        """Returns a point on the edge of the ball's radius
+        going in a given normalized direction (length of 1)."""
+        #Starts from center, displaces by the radius in the given direction
+        return Vector2(self._pos.x+ self._radius*direction.x,
+                       self._pos.y+ self._radius*direction.y)
+    
+    def rebound(self, collision: Tuple[int, int]) -> None:
+        """Bounces ball back from collision point with amortised speed.
+        Speed depends on mass difference between objects (UNIMPLEMENTED). 
+        Currently purely elastic."""
+        #Amortization factor, remove later
+        AMORTIZE_FAC = 1.5
+        #Vector sub finds direction between 2 points (col -> pos)
+        col_vector = pygame.Vector2(collision)
+        col_dir = self._pos - col_vector
         
+        #TODO: Change to amortize depending on mass later
+        col_mag = self._pos.mag / AMORTIZE_FAC
+        #Normalize vector 
+        col_dir = col_dir.normalize
+        #Create spd vector using magnitude and direction. 
+        col_spd = pygame.Vector2(col_mag * col_dir.x, col_mag * col_dir.y)
         
-        self.update()
-        
-    ##TODO: Add str, repr 
-        
-    ##Ideally, this is in a higher level class, like game/main
+        #Set current spd to resultant collision spd
+        self._set_spd(col_spd)
+    
+    ##Might move to spaceJam class
     def _sum_acceleration(ball: 'Ball', planets: ['Planet']) -> 'pygame.Vector2':
         """ Returns the sum of the accelerations exerted on the ball by
         each planet in the level.
