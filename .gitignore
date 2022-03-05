@@ -1,5 +1,6 @@
 # Object file
 *.o
-
+__pycache__
 # Ada Library Information
 *.ali
+.DS_Store
