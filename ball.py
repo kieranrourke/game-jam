@@ -1,10 +1,11 @@
 """Ball class for space basketball"""
 
-__date__ = '3/4/22'
-__version__ = 'V0.6'
+__date__ = '3/5/22'
+__version__ = 'V0.6.1'
 __author__ = 'Nucleus team'
 
 import pygame
+import math
 
 class Ball(pygame.sprite.Sprite):
     ##Eventually, should not need planets as a field
@@ -25,7 +26,7 @@ class Ball(pygame.sprite.Sprite):
         
         #Initialise sprite sheet variables
         self._sheet = sheet
-        self._SHEET_OFFSETS = [(0,0),(0,32)]
+        self._SHEET_OFFSETS = [(0,0),(0,SIZE)]
         self.image = self._sheet.image_at((self._SHEET_OFFSETS[0]), 
                                           (SIZE, SIZE)) 
         self._cur_offset = 0 #might remove later
@@ -36,9 +37,7 @@ class Ball(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         
         #set initial pos, spd, accel
-
         self._pos = pygame.Vector2(ini_x,ini_y)
-        #set initial spd/accel to 0
         self._spd = pygame.Vector2(0,0)
         self._accel = pygame.Vector2(0,0)
         
@@ -96,21 +95,53 @@ class Ball(pygame.sprite.Sprite):
         total_accel = pygame.Vector2() #0,0
     
         for planet in planets:
-            total_accel += planet.force_applied(ball.get_pos_tup(),
-                                              ball.get_mass())
+            total_accel += planet.accel_applied(ball.get_pos(), ball.get_mass())
         
         return total_accel
     
+    def _set_accel(self, new_accel: 'pygame.Vector2'):
+        """Sets acceleration within bounds defined by _MAX_ACCEL.
+        """
+        #0->x, 1 ->y. Sets for both cartesian coordinates
+        for i in range(0,2):
+            if new_accel[i] < -self._MAX_ACCEL:
+                #below -max, set to -max
+                self._accel[i] = -self._MAX_ACCEL
+            elif new_accel[i] > self._MAX_ACCEL:
+                #Above max, set to max
+                self._accel[i] = self._MAX_ACCEL
+            else:
+                #Within bounds, can set to given val
+                self._accel[i] = new_accel[i]
         
-    ##Might need to set bounds on acceleration/speed/position. Sometimes crashes
+    def _set_spd(self, new_spd: 'pygame.Vector2'):
+        """Sets speed within bounds defined by _MAX_SPD.
+        """    
+        #0->x, 1 ->y. Sets for both cartesian coordinates
+        for i in range(0,2):
+            if new_spd[i] < -self._MAX_SPD:
+                #below -max, set to -max
+                self._spd[i] = -self._MAX_SPD
+            elif new_spd[i] > self._MAX_SPD:
+                #Above max, set to max
+                self._spd[i] = self._MAX_SPD
+            else:
+                #Within bounds, can set to given val
+                self._spd[i] = new_spd[i]     
+                
+    def _set_pos(self, new_pos: 'pygame.Vector2'):
+        """Unsure if we'll bind it in the window, or if we'll cause a reset. 
+        TBD if we need this, keeping this here to remember it."""
+        raise NotImplementedError("_set_pos is not implemented yet")
+    
     def _update_pos(self, accel:'pygame.Vector2') -> None:
         """ Updates position based on speed of the ball (affected by planets). 
         Should be called on each game tick. 
         """   
         #Update accel (sum of forces) -> update spd -> update position
-        self._accel += accel
-        self._spd += self._accel
-        self._pos += self._pos 
+        self._set_accel(accel)
+        self._set_spd(self._spd + self._accel)
+        self._pos += self._spd
     
     def _draw(self) -> None:
         """Draws the ball on the screen. Should be called on each game tick.
@@ -124,12 +155,13 @@ class Ball(pygame.sprite.Sprite):
         Should be called each game tick.
         """
         self._update_pos(self._sum_acceleration(self._planets))
+        #TODO: Add a sprite sheet updater
         self._draw()
         
     def get_mass(self) -> int:
         """ Returns the mass of the ball.
         """
-        return self._radius
+        return math.pi * math.pow((self._radius/2), 2)
     
     def get_pos(self) -> 'pygame.Vector2':
         """ Returns the current position of the ball as a 2D vector.
@@ -138,8 +170,6 @@ class Ball(pygame.sprite.Sprite):
     
     def get_pos_tup(self) -> tuple[int, int]:
         """ Returns the current position of the ball as a tuple 
-        in the form (x, y).
+        in the form (x, y). Might remove later.
         """
         return (self._pos.x, self._pos.y)
-    
-    
