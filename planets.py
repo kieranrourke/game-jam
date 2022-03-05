@@ -1,17 +1,29 @@
 import pygame
 import math
+
+__date__ = '3/5/22'
+__version__ = 'V0.3'
+__author__ = 'Nucleus team'
+
+class Planet(pygame.sprite.Sprite):
+    def __init__(self, game: 'Game', image: 'pygame.Surface', 
+                 size, x_pos, y_pos) -> None:
+        #Superclass constructor
+        pygame.sprite.Sprite.__init__(self)
         
-
-
-
-
-class Planet:
-    def __init__(self, image, game, x_size, y_size, x_pos, y_pos) -> None:
-        self.image = pygame.transform.scale(image, (x_size, y_size))
+        #Initialise sprite image (might change to sheet later)
+        self._SIZE = size
+        self.image = image   
+        ##A way to scale images later:
+        #self.image = pygame.transform.scale(image, (size, size))
+        
+        #Hitbox attributes. Mask prefered
+        self.rect = (self._SIZE, self._SIZE)
+        self._radius = self._SIZE/2
+        self.mask = pygame.mask.from_surface(self.image)        
+        
         self.game = game
         self._pos = pygame.Vector2(x_pos, y_pos)
-        self.area = math.pi * math.pow((x_size/2), 2)
-
 
     def accel_applied(self, pos:'pygame.Vector2', mass: int) -> 'pygame.Vector2':
         """Returns the amount of acceleration applied to a given object
@@ -47,35 +59,15 @@ class Planet:
                                    total_accel*math.sin(angle) * y_sign)
 
 
-    def force_applied(self, pos:tuple, mass:int) -> tuple:
-        """Returns the amount of force applied to a given position
-
-        Args:
-            pos (tuple): position of the ball 
-            mass (int): mass of the ball
-
+    def find_img_center(self) -> 'pygame.Vector2':
+        """Returns the center of the image
         Returns:
-            tuple: x and y components of the force 
+            Vector2: center of the image in 2D vector format [x,y]
         """
-        center = self.find_center()
-        x_distance = center[0] - pos[0]
-        y_distance = center[1] - pos[1]
-        angle = math.atan(y_distance/x_distance)
-
-        total_distance = self.pythag(center, pos) 
-        total_force = self.area/(total_distance * mass)
-
-        return pygame.math.Vector2(total_force*math.cos(angle), total_force*math.sin(angle))
-
-
-    def find_center(self) -> tuple:
-        """Returns the center of the circle
-
-        Returns:
-            tuple: center of the circle in tuple format (x,y)
-        """
-        return (self.x_pos/2, self.y_pos/2)
-
+        #Not quite true I think.
+        width, height = self.image.get_size()
+        return pygame.Vector2(self._pos.x + width / 2, 
+                              self._pos.y +  height / 2)
 
     @staticmethod
     def pythag(pos1: 'pygame.Vector2', pos2:'pygame.Vector2') -> float:
@@ -97,3 +89,9 @@ class Planet:
         ##Blit takes position as top left corner of image
         #pygame.draw.circle(self.game.screen, (255,255,255), 
                            #(self.x_pos, self.y_pos), 10)        
+                           
+    def get_mass(self) -> int:
+        """ Returns the mass of the planet.
+        """
+        return math.pi * math.pow((self._radius/2), 2)    
+
