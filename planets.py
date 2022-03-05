@@ -1,15 +1,30 @@
 import pygame
 import math
 
+__date__ = '3/5/22'
+__version__ = 'V0.3'
+__author__ = 'Nucleus team'
 
 
 
-class Planet:
-    def __init__(self, image, game, x_size, y_size, x_pos, y_pos) -> None:
-        self.image = pygame.transform.scale(image, (x_size, y_size))
+class Planet(pygame.sprite.Sprite):
+    def __init__(self, game: 'Game', image: 'pygame.Surface', 
+                 size, x_pos, y_pos) -> None:
+        self._SIZE = size
+        
+        #Initialise sprite image (might change to sheet later)
+        self.image = image   
+        ##A way to scale images later:
+        #self.image = pygame.transform.scale(image, (size, size))
+        
+        #Hitbox attributes. Mask prefered
+        self.rect = (self._SIZE, self._SIZE)
+        self._radius = self._SIZE/2
+        self.mask = pygame.mask.from_surface(self.image)        
+        
         self.game = game
         self._pos = pygame.Vector2(x_pos, y_pos)
-        self.area = math.pi * math.pow((x_size/2), 2)
+        #Used as mass
 
 
     def accel_applied(self, pos:'pygame.Vector2', mass: int) -> 'pygame.Vector2':
@@ -76,3 +91,8 @@ class Planet:
         ##Blit takes position as top left corner of image
         #pygame.draw.circle(self.game.screen, (255,255,255), 
                            #(self.x_pos, self.y_pos), 10)        
+                           
+    def get_mass(self) -> int:
+        """ Returns the mass of the planet.
+        """
+        return math.pi * math.pow((self._radius/2), 2)    
