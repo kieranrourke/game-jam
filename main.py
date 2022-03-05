@@ -13,7 +13,7 @@ class SpaceJam:
         self.game = game
         self.planets = []
         self.ball = None
-        self.level = 10
+        self.level = 8
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
 
     
@@ -30,6 +30,8 @@ class SpaceJam:
     def create_level(self, level):
         self.planets = []
         minx = 0  #Offset to stop a lot of planets from spawning together
+        inc = self.game.xBound/level
+        print(inc)
         for i in range(level):
             x_position = random.randint(minx, i*100) 
             if i % 2 == 0:
@@ -41,7 +43,7 @@ class SpaceJam:
             planet_image = pygame.image.load(self.util_folder_path+'/planets/'+random.choice(os.listdir(self.util_folder_path+'/planets/')))  #Randomly picks a planet image
             
             if minx < self.game.xBound - 100:  #Change the 100 to a non hardcoded value 
-                minx+=50
+                minx+=inc
             else:
                 minx=0
             
@@ -93,7 +95,7 @@ def update_display(game):
     
 if __name__ == "__main__":
     util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
-    g1 = Game(
+    game = Game(
         xBound=800,
         yBound=800,
         caption="Space Jam",
