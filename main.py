@@ -106,14 +106,13 @@ if __name__ == "__main__":
     spacejam.game_loop()
     
     net = Net(
-        game = g1,
+        game = game,
         hgt=100,
-        planet=p1,
+        planet=game,
         direction='NORTH',
         image=pygame.image.load(util_folder_path+"net.png")
     )
     
     
-    game_loop(g1, p1, net)
     
     
