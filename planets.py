@@ -5,14 +5,14 @@ __date__ = '3/5/22'
 __version__ = 'V0.3'
 __author__ = 'Nucleus team'
 
-
-
 class Planet(pygame.sprite.Sprite):
     def __init__(self, game: 'Game', image: 'pygame.Surface', 
                  size, x_pos, y_pos) -> None:
-        self._SIZE = size
+        #Superclass constructor
+        pygame.sprite.Sprite.__init__(self)
         
         #Initialise sprite image (might change to sheet later)
+        self._SIZE = size
         self.image = image   
         ##A way to scale images later:
         #self.image = pygame.transform.scale(image, (size, size))
@@ -24,8 +24,6 @@ class Planet(pygame.sprite.Sprite):
         
         self.game = game
         self._pos = pygame.Vector2(x_pos, y_pos)
-        #Used as mass
-
 
     def accel_applied(self, pos:'pygame.Vector2', mass: int) -> 'pygame.Vector2':
         """Returns the amount of acceleration applied to a given object
@@ -96,3 +94,4 @@ class Planet(pygame.sprite.Sprite):
         """ Returns the mass of the planet.
         """
         return math.pi * math.pow((self._radius/2), 2)    
+
