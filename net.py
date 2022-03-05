@@ -12,8 +12,8 @@ class Net:
         self.height = hgt
         if direction == 'NORTH':
             self.direction = 'NORTH'
-            self.x = planet.x_pos
-            self.y = planet.y_pos - (planet.y_size / 2)
+            self.x = planet.get_pos().x
+            self.y = planet.get_pos().y - (self.get_size / 2)
         
     def draw(self):
         self.game.screen.blit(self.image, (self.x, self.y))

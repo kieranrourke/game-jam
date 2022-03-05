@@ -13,17 +13,18 @@ class Planet(pygame.sprite.Sprite):
         
         #Initialise sprite image (might change to sheet later)
         self._SIZE = size
-        self.image = image   
-        ##A way to scale images later:
-        #self.image = pygame.transform.scale(image, (size, size))
+        #self.image = image   #Usual image storing
+        #A way to scale images later:
+        self.image = pygame.transform.scale(image, (size, size))
+        
+        self._pos = pygame.Vector2(x_pos, y_pos)
         
         #Hitbox attributes. Mask prefered
-        self.rect = (self._SIZE, self._SIZE)
-        self._radius = self._SIZE/2
-        self.mask = pygame.mask.from_surface(self.image)        
-        
-        self.game = game
-        self._pos = pygame.Vector2(x_pos, y_pos)
+        self.rect = pygame.Rect(tuple(self._pos), (self._SIZE, self._SIZE))
+        self.radius = self._SIZE/2
+        self.mask = pygame.mask.from_surface(self.image)      
+            
+        self.game = game        
 
     def accel_applied(self, pos:'pygame.Vector2', mass: int) -> 'pygame.Vector2':
         """Returns the amount of acceleration applied to a given object
@@ -36,13 +37,14 @@ class Planet(pygame.sprite.Sprite):
         #Higher factor means more force applied (1 is default)
         ACCEL_FACTOR = 1
         
-        center = self.find_img_center()
+        center = self.get_img_center()
         x_distance = center.x - pos.x
         y_distance = center.y - pos.y
         
         #if distance is +ve, planet coord > object coord. 
         #Should increase object coord
         x_sign = 1 if x_distance >= 0 else -1
+        #Currently unsure if should keep or not.
         y_sign = 1 if y_distance >= 0 else -1
         
         #Technically, should never divide by 0 when collisions exist. 
@@ -51,23 +53,12 @@ class Planet(pygame.sprite.Sprite):
         angle = math.atan(y_distance/x_distance)
 
         total_distance = self.pythag(center, pos) 
-        #see prev comment about zero div
+        #see pr_ev comment about zero div
         total_distance += 1 if total_distance == 0 else 0
-        total_accel = ACCEL_FACTOR * self.area / (total_distance * mass)
+        total_accel = ACCEL_FACTOR * self.get_mass() / (total_distance * mass)
         
         return pygame.math.Vector2(total_accel*math.cos(angle) * x_sign, 
                                    total_accel*math.sin(angle) * y_sign)
-
-
-    def find_img_center(self) -> 'pygame.Vector2':
-        """Returns the center of the image
-        Returns:
-            Vector2: center of the image in 2D vector format [x,y]
-        """
-        #Not quite true I think.
-        width, height = self.image.get_size()
-        return pygame.Vector2(self._pos.x + width / 2, 
-                              self._pos.y +  height / 2)
 
     @staticmethod
     def pythag(pos1: 'pygame.Vector2', pos2:'pygame.Vector2') -> float:
@@ -84,14 +75,33 @@ class Planet(pygame.sprite.Sprite):
         """Draws the planet on the screen
         """
         self.game.screen.blit(self.image, (self._pos.x, self._pos.y))
-        
-        ##draw circle draws around the center. 
-        ##Blit takes position as top left corner of image
-        #pygame.draw.circle(self.game.screen, (255,255,255), 
-                           #(self.x_pos, self.y_pos), 10)        
-                           
+                   
+    ##Accessors        
     def get_mass(self) -> int:
         """ Returns the mass of the planet.
         """
-        return math.pi * math.pow((self._radius/2), 2)    
-
+        return math.pi * math.pow((self.radius), 2)   
+    
+    def get_size(self) -> int:
+        """ Returns the mass of the planet.
+        """
+        return self._SIZE
+    
+    def get_pos(self) -> 'pygame.Vector2':
+        """ Returns the position vector of the planet.
+        """
+        return self._pos
+    
+    def get_pos_tup(self) -> tuple[float, float]:
+        """ Returns the position vector of the planet.
+        """
+        return self._pos.x, self._pos.y   
+    
+    def get_img_center(self) -> 'pygame.Vector2':
+        """Returns the center of the image
+        Returns:
+            Vector2: center of the image in 2D vector format [x,y]
+        """
+        width, height = self.image.get_size()
+        return pygame.Vector2(self._pos.x + width / 2, 
+                              self._pos.y +  height / 2)    
