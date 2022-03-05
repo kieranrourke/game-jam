@@ -43,9 +43,9 @@ if __name__ == "__main__":
         game = g1,
         hgt=100,
         planet=p1,
-        direction='NORTH',
-        image=pygame.image.load(util_folder_path+"net.png")
+        direction='NORTH'
     )
+    # image=pygame.image.load(util_folder_path+"net.png")
     
     
     game_loop(g1, p1, net)
