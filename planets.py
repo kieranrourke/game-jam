@@ -10,14 +10,18 @@ class Planet:
         self.game = game
         self.x_pos = x_pos 
         self.y_pos = y_pos
+        self.x_size = x_size
+        self.y_size = y_size
         self.area = math.pi * math.pow((x_size/2), 2)
 
 
     def force_applied(self, pos:tuple, mass:int) -> tuple:
         """Returns the amount of force applied to a given position
+
         Args:
             pos (tuple): position of the ball 
             mass (int): mass of the ball
+
         Returns:
             tuple: x and y components of the force 
         """
@@ -28,35 +32,35 @@ class Planet:
 
         total_distance = self.pythag(center, pos) 
         total_force = self.area/(total_distance * mass)
-        
-        ##debug prints
-        #print("total force:", total_force)
-        #print("x:", total_force*math.cos(angle))
-        #print("y:", total_force*math.sin(angle))
-        ##Issue: 90% sure it doesn't return negative x/y values for some reason,
-        ##leads to infinite accel
+
         return pygame.math.Vector2(total_force*math.cos(angle), total_force*math.sin(angle))
 
 
     def find_center(self) -> tuple:
         """Returns the center of the circle
+
         Returns:
             tuple: center of the circle in tuple format (x,y)
         """
         return (self.x_pos/2, self.y_pos/2)
 
-    @staticmethod
+    
     def pythag(pos1: tuple, pos2:tuple) -> float:
         """returns the distance between two points
+
         Args:
             pos1 (tuple): position of the 1st object in x,y format
             pos2 (tuple): position of the 2nd object in x,y format
+
         Returns:
             float: distance between the points
         """
         return math.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[0])**2)
-
+    
     def draw_planet(self) -> None:
         """Draws the planet on the screen
         """
         self.game.screen.blit(self.image, (self.x_pos, self.y_pos))
+
+
+        

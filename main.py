@@ -1,32 +1,28 @@
 import pygame
 from game import Game
+from planets import Planet
+from net import Net
 import pathlib
 import pdb
-from ball import Ball
-from planets import Planet
 
 
-def game_loop(game):
+def game_loop(game, planet,net):
     while game.running:
         game.setMisc()
-        
         game.checkEvents()
         game.running = False if game.QUITKEY else True
+        planet.draw_planet()
+        net.draw()
         
-        ##update objects at each tick to draw + update states
-        #for planet in planets:
-            #planet.update()
-        ball.update()
         update_display(game)
 
 def update_display(game):
     game.resetKeys()
-    pygame.display.update() #No param means whole window updates
-
-
+    pygame.display.update()
+    
 if __name__ == "__main__":
     util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
-    game = Game(
+    g1 = Game(
         xBound=800,
         yBound=800,
         caption="Space Jam",
@@ -34,10 +30,24 @@ if __name__ == "__main__":
         background=pygame.image.load(util_folder_path+"background.jpeg")
     )
     
-    planet_img = pygame.image.load(util_folder_path+"Planet.png")
-    planets = [Planet(planet_img, game, 10, 10, 100, 100)]
-    ball = Ball(game, planets, 40,40)
+    p1 = Planet(
+        image=pygame.image.load(util_folder_path+"planet.png"),
+        game = g1,
+        x_size=150,
+        y_size=150,
+        x_pos=400,
+        y_pos=400
+    )
     
-    game_loop(game)    
+    net = Net(
+        game = g1,
+        hgt=100,
+        planet=p1,
+        direction='NORTH',
+        image=pygame.image.load(util_folder_path+"net.png")
+    )
+    
+    
+    game_loop(g1, p1, net)
     
     
