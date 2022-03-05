@@ -5,7 +5,13 @@ import pathlib
 import random
 import os
 import pdb
-
+# net = Net(
+#         game = g1,
+#         hgt=100,
+#         planet=p1,
+#         direction='NORTH',
+#         image=pygame.image.load(util_folder_path+"net.png")
+#     )
 
 class SpaceJam:
     def __init__(self, game) -> None:
