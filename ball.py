@@ -1,20 +1,11 @@
 """Ball class for space basketball"""
 
-<<<<<<< Updated upstream
 __date__ = '3/5/22'
-__version__ = 'V0.6.1'
-=======
-__date__ = '3/4/22'
 __version__ = 'V0.6.2'
->>>>>>> Stashed changes
 __author__ = 'Nucleus team'
 
 import pygame
 import math
-<<<<<<< Updated upstream
-=======
-#import typing
->>>>>>> Stashed changes
 
 class Ball(pygame.sprite.Sprite):
     ##Eventually, should not need planets as a field
@@ -32,15 +23,7 @@ class Ball(pygame.sprite.Sprite):
         
         #Initialise sprite sheet variables
         self._sheet = sheet
-<<<<<<< Updated upstream
         self._SHEET_OFFSETS = [(0,0),(0,SIZE)]
-        self.image = self._sheet.image_at((self._SHEET_OFFSETS[0]), 
-                                          (SIZE, SIZE)) 
-        self._cur_offset = 0 #might remove later
-=======
-        self._SHEET_OFFSETS = [(0,0),(0,32)]
->>>>>>> Stashed changes
-        
         self.image = self._sheet.image_at(pygame.Rect(self._SHEET_OFFSETS[0], 
                                           (self._SIZE, self._SIZE)))
         self._cur_offset = 0 #might remove later
@@ -113,12 +96,7 @@ class Ball(pygame.sprite.Sprite):
         total_accel = pygame.Vector2() #0,0
     
         for planet in planets:
-<<<<<<< Updated upstream
             total_accel += planet.accel_applied(ball.get_pos(), ball.get_mass())
-=======
-            total_accel += planet.accel_applied(ball.get_pos(),
-                                              ball.get_mass())
->>>>>>> Stashed changes
         
         return total_accel        
     
@@ -136,11 +114,7 @@ class Ball(pygame.sprite.Sprite):
             else:
                 #Within bounds, can set to given val
                 self._accel[i] = new_accel[i]
-<<<<<<< Updated upstream
-        
-=======
-            
->>>>>>> Stashed changes
+
     def _set_spd(self, new_spd: 'pygame.Vector2'):
         """Sets speed within bounds defined by _MAX_SPD.
         """    
@@ -159,26 +133,15 @@ class Ball(pygame.sprite.Sprite):
     def _set_pos(self, new_pos: 'pygame.Vector2'):
         """Unsure if we'll bind it in the window, or if we'll cause a reset. 
         TBD if we need this, keeping this here to remember it."""
-<<<<<<< Updated upstream
-        raise NotImplementedError("_set_pos is not implemented yet")
-    
-    def _update_pos(self, accel:'pygame.Vector2') -> None:
-=======
-        raise NotImplementedError("_set_pos is not implemented yet")    
-    
+
     ##Updating methods
     def _update_pos(self, planets: ['Planet']) -> None:
->>>>>>> Stashed changes
         """ Updates position based on speed of the ball (affected by planets). 
         Should be called on each game tick. 
         """   
         self._check_collisions(planets, net)
         #Update accel (sum of forces) -> update spd -> update position
-<<<<<<< Updated upstream
-        self._set_accel(accel)
-=======
         self._set_accel(self._sum_acceleration(planets))
->>>>>>> Stashed changes
         self._set_spd(self._spd + self._accel)
         self._pos += self._spd
     
@@ -197,28 +160,20 @@ class Ball(pygame.sprite.Sprite):
         """ Updates the ball's state and displays it. 
         Should be called each game tick.
         """
-<<<<<<< Updated upstream
-        self._update_pos(self._sum_acceleration(self._planets))
-        #TODO: Add a sprite sheet updater
-=======
+
         self._update_pos(planets)
-        self._update_mask()        
->>>>>>> Stashed changes
+        self._update_mask()       
         self._draw()
         
         ##Shows hitbox for debug
-        #self.show_intended_mask()
-        self.show_mask()        
+        #self.show_intended_mask() #DEBUG
+        self.show_mask()        #DEBUG
         
     ##Accessors    
     def get_mass(self) -> int:
         """ Returns the mass of the ball.
         """
-<<<<<<< Updated upstream
-        return math.pi * math.pow((self._radius/2), 2)
-=======
         return math.pi * math.pow((self._radius), 2)   
->>>>>>> Stashed changes
     
     def get_pos(self) -> 'pygame.Vector2':
         """ Returns the current position of the ball as a 2D vector.
@@ -229,9 +184,6 @@ class Ball(pygame.sprite.Sprite):
         """ Returns the current position of the ball as a tuple 
         in the form (x, y). Might remove later.
         """
-<<<<<<< Updated upstream
-        return (self._pos.x, self._pos.y)
-=======
         return (self._pos.x, self._pos.y)
     
     def get_img_center(self) -> 'pygame.Vector2':
@@ -255,4 +207,4 @@ class Ball(pygame.sprite.Sprite):
         #draw circle draws around the center of img. (shows hitbox)
         #Draws in white
         self.mask.to_surface(self._game.screen)       
->>>>>>> Stashed changes
+
