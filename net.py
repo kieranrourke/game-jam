@@ -37,32 +37,61 @@ class Net():
         self.img_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/Net'
 
         # Size constants for each net 
-        POLE_WIDTH = 14
-        POLE_HEIGHT = hgt
+        if planet.get_pos()[0] < self.game.xBound/2:
+            POLE_WIDTH = 14
+            POLE_HEIGHT = hgt
 
-        BBOARD_WIDTH = 48
-        BBOARD_HEIGHT = 60        
+            BBOARD_WIDTH = 48
+            BBOARD_HEIGHT = 60        
 
-        RIM_WIDTH = 8 #(64-48) /2
-        RIM_HEIGHT = 5   
+            RIM_WIDTH = 8 #(64-48) /2
+            RIM_HEIGHT = 20   
 
-        MESH_WIDTH = 48
-        MESH_HEIGHT = 20        
 
-        POLE_POS_X = self.planet.get_pos().x + (self.planet.get_size() / 2)
-        POLE_POS_Y = self.planet.get_pos().y - POLE_HEIGHT
+            MESH_WIDTH = 48
+            MESH_HEIGHT = 20        
 
-        BBOARD_POS_X = POLE_POS_X - 5
-        BBOARD_POS_Y = POLE_POS_Y - BBOARD_HEIGHT + 5
+            POLE_POS_X = self.planet.get_pos().x + (self.planet.get_size() / 2)
+            POLE_POS_Y = self.planet.get_pos().y - POLE_HEIGHT
 
-        #Rim is actually 2 small rectangles on edge of mesh
-        RIM_POS_X_1 = BBOARD_POS_X + BBOARD_WIDTH - 5
-        RIM_POS_X_2 = BBOARD_POS_X + BBOARD_WIDTH - 5 + MESH_WIDTH + RIM_WIDTH
-        RIM_POS_X_3 = BBOARD_POS_X + BBOARD_WIDTH - 5 + RIM_WIDTH
-        RIM_POS_Y = BBOARD_POS_Y + BBOARD_HEIGHT - RIM_HEIGHT - 5
+            BBOARD_POS_X = POLE_POS_X - 5
+            BBOARD_POS_Y = POLE_POS_Y - BBOARD_HEIGHT + 5
+            
+            #Rim is actually 2 small rectangles on edge of mesh
+            RIM_POS_X_1 = BBOARD_POS_X + BBOARD_WIDTH - 5
+            RIM_POS_X_2 = BBOARD_POS_X + BBOARD_WIDTH - 5 + MESH_WIDTH + RIM_WIDTH
+            RIM_POS_Y = BBOARD_POS_Y + BBOARD_HEIGHT - RIM_HEIGHT - 5
 
-        MESH_POS_X = RIM_POS_X_1 + RIM_WIDTH 
-        MESH_POS_Y = RIM_POS_Y 
+            MESH_POS_X = RIM_POS_X_1 + RIM_WIDTH 
+            MESH_POS_Y = RIM_POS_Y 
+
+        else:
+            POLE_WIDTH = 14
+            POLE_HEIGHT = hgt
+
+            BBOARD_WIDTH = 48
+            BBOARD_HEIGHT = 60        
+
+            RIM_WIDTH = 8 #(64-48) /2
+            RIM_HEIGHT = 20   
+
+            MESH_WIDTH = 48
+            MESH_HEIGHT = 20        
+
+            POLE_POS_X = self.planet.get_pos().x + (self.planet.get_size() / 2)
+            POLE_POS_Y = self.planet.get_pos().y - POLE_HEIGHT
+
+            BBOARD_POS_X = POLE_POS_X - 20
+            BBOARD_POS_Y = POLE_POS_Y - BBOARD_HEIGHT + 5
+            
+            #Rim is actually 2 small rectangles on edge of mesh
+            RIM_POS_X_1 = BBOARD_POS_X-RIM_WIDTH 
+            RIM_POS_X_2 = BBOARD_POS_X - MESH_WIDTH - RIM_WIDTH - RIM_WIDTH+7
+            RIM_POS_Y = BBOARD_POS_Y + BBOARD_HEIGHT - RIM_HEIGHT - 5
+
+
+            MESH_POS_X = RIM_POS_X_1 - RIM_WIDTH - MESH_WIDTH +7
+            MESH_POS_Y = RIM_POS_Y
 
 
         # Net group

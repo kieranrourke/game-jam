@@ -106,3 +106,31 @@ class Game:
         self.WKEY, self.AKEY, self.SKEY, self.DKEY, self.ENTERKEY, self.BACKKEY, self.SPACEKEY, self.UPAKEY, self.UPDKEY, self.ESCAPEKEY, self.UPWKEY, self.UPSKEY, self.UPARROWKEY, self.DOWNARROwKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY, self.DOWN_MOUSE_POS, self.UP_MOUSE_POS\
         = False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False
 
+class Button:
+    def __init__(self, game, x, y, text, color=(128,128,128), text_size = 32) -> None:
+        self.x = x
+        self.y = y
+        self.text_size = text_size
+        self.game = game
+        self.text = text
+        self.color = color
+
+        self.generate_button()
+
+    def generate_button(self):
+        self.font = pygame.font.SysFont('franklingothicmedium', self.text_size)
+        self.button_text = self.font.render(self.text, True, self.color)
+        self.size = self.button_text.get_size()
+        self.rect = pygame.Rect(self.x, self.y, self.size[0], self.size[1])
+    
+    def draw_button(self):
+        self.game.draw(self.button_text, self.x, self.y)
+   
+    def is_clicked(self, pos: tuple) -> bool:
+        """Tests if a point is inside the button
+        Args:
+            pos (Tuple): Click position
+        Returns:
+            bool: Returns if its in the button 
+        """
+        return self.rect.collidepoint(pos[0], pos[1])
