@@ -78,9 +78,10 @@ class SpaceJam:
             
         #PLACE BALL, store in sprite group
         ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
-        self.ball = Ball(game, ball_sheet, 0,0,)
+        self.ball = Ball(game, ball_sheet, 50,0,)
         
         #PLACE NET
+        self.net = Net(game, 75, self.planets[0], 'NORTH')
 
     
 
@@ -99,10 +100,14 @@ class SpaceJam:
     
     def update_ball(self):
         #Uses planets for acceleration
-        scored = self.ball.update(self.planets, None)
+        scored = self.ball.update(self.planets, self.net)
+        
+    def update_net(self):
+        self.net.update()    
     
     def update_display(self):
         self.game.resetKeys()
+        self.update_net()
         self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
         pygame.display.update()
