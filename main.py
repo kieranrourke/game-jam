@@ -1,5 +1,5 @@
 import pygame
-from game import Game, Button
+from game import Game
 from planets import Planet
 from net import Net
 from ball import Ball
@@ -21,12 +21,13 @@ class SpaceJam:
         self.net = None
         self.level = 3 
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
-        #Shooter
+
         self.shooter = Shooting(
             game,
             power_bar= pygame.transform.scale(pygame.image.load(self.util_folder_path+'arrow.png'),(2, 100)),
             arrow = pygame.transform.scale(pygame.image.load(self.util_folder_path+'real_arrow.png'), (100,100))
         )
+
         #Reset Button
         self.reset_button = Button(
             game=game,
@@ -36,6 +37,7 @@ class SpaceJam:
             color=(255,165,0),
             text_size=30
         )
+
         #PLACE BALL, store in sprite group
         ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
         self.ball = Ball(game, ball_sheet, 0,0,)
@@ -58,7 +60,10 @@ class SpaceJam:
                 if self.reset_button.is_clicked(self.game.DOWN_MOUSE_POS):
                     self.finish_level()
 
-            self.game.running = False if self.game.QUITKEY else True
+            if self.game.QUITKEY:
+                self.game.running = False 
+                pygame.quit()
+
             self.update_display() 
             self.game.clock.tick(60)
     
@@ -99,6 +104,7 @@ class SpaceJam:
 
             planet_image = pygame.image.load(self.util_folder_path+'/planets/'+random.choice(os.listdir(self.util_folder_path+'/planets/')))  #Randomly picks a planet image
             
+
             if minx > self.game.xBound/2-100 and minx < self.game.xBound+100:
                 minx = self.game.xBound+100
             elif minx<self.game.xBound-100:
@@ -107,6 +113,8 @@ class SpaceJam:
                 minx=0
             
             ##Uses simple planet models atm
+
+
             self.planets.append(self.create_planet(random.randint(1, 3), 
                                               x_position, y_position))
             # self.planets.append(Planet(
@@ -116,10 +124,11 @@ class SpaceJam:
             #     x_pos=x_position,
             #     y_pos=y_position
             # ))
-            
+       
                 
         #PLACE NET
         self.net = Net(game, 75, self.planets[random.randint(0, len(self.planets)-1)], 'NORTH')
+
         # self.net = Net(game, 75, self.planets[-1], 'NORTH')
 
         
@@ -137,6 +146,7 @@ class SpaceJam:
         self.clear_level()
         self.level+=1
         self.create_level(self.level)
+
     
     def update_planets(self):
         for planet in self.planets:
