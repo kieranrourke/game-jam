@@ -17,11 +17,6 @@ class Planet(pygame.sprite.Sprite):
         #A way to scale images later:
         self.image = pygame.transform.scale(image, (size, size))
         
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        
-        self.size = size       
-        
         self._pos = pygame.Vector2(x_pos, y_pos)
         
         #Hitbox attributes. Mask prefered

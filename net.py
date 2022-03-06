@@ -80,8 +80,8 @@ class Net(pygame.sprite.Group):
         MESH_WIDTH = 48
         MESH_HEIGHT = 20        
         
-        POLE_POS_X = self.planet.x_pos + (self.planet.size / 2)
-        POLE_POS_Y = self.planet.y_pos - POLE_HEIGHT
+        POLE_POS_X = self.planet.get_pos().x + (self.planet.get_size() / 2)
+        POLE_POS_Y = self.planet.get_pos().y - POLE_HEIGHT
         
         BBOARD_POS_X = POLE_POS_X - 5
         BBOARD_POS_Y = POLE_POS_Y - BBOARD_HEIGHT + 5
