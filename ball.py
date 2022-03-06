@@ -53,8 +53,8 @@ class Ball(pygame.sprite.Sprite):
         self._MAX_SPD = 10
         self._MAX_ACCEL  = 1
         self._MIN_SPD_MAG  = 1 #Goes to 0 if below this spd
-        #Set to true later, shooting it sets it to False
-        self._stopped = False 
+        #Does not have mvmnt initially
+        self._stopped = True 
         
         #Store game screen
         self._game = game
@@ -88,20 +88,33 @@ class Ball(pygame.sprite.Sprite):
                 self.rebound(solid)
 
     
+    def _set_amortization(self, other_mass: float) -> float:
+        #For max amort: 
+        #self mass needs to be MAX*CORREC times smaller than other
+        #> MIN when self_mass > 
+        BASE_AMORT = 1.2 #ball >= planet
+        MAX_AMORT = 2 #vall << planet
+        AMORT_CORRECTION = 3
+        
+        self_mass = self.get_mass()
+        
+        mass_factor = other_mass/(AMORT_CORRECTION*self_mass)
+        
+        if mass_factor <= BASE_AMORT:
+            return BASE_AMORT
+        
+        return min(MAX_AMORT, mass_factor)
+    
     def rebound(self, collision: 'pygame.Sprite') -> None:
         """Bounces ball back from collision point with amortised speed.
-        Speed depends on mass difference between objects (UNIMPLEMENTED).
-        Thinking of also setting position to edge of other object... 
-        (UNIMPLEMENTED) probably overkill/not that useful"""
-        #FIXME*: Somehow, always leads ball to bottom right of planets 
-        #*(might have to do with initial cons tbh)
-        #Amortization factor, remove later
-        AMORTIZE_FAC = 1.2
+        Speed depends on mass difference between objects.
+        """
+        #Amortization factor, bigger it is, less speed on rebound (based on mass)
+        amortize_factor = self._set_amortization(collision.get_mass())
         #Vector sub finds direction between 2 points (col -> pos)
         col_dir = (self.get_center() - collision.get_center()).normalize() #unit vec
         
-        #TODO: Change to amortize depending on mass difference later
-        col_mag = self._spd.magnitude() / AMORTIZE_FAC
+        col_mag = self._spd.magnitude() / amortize_factor
         #Create spd vector using magnitude and direction. 
         col_spd = pygame.Vector2(col_mag * col_dir.x, col_mag * col_dir.y)
         #Set current spd to resultant collision spd
