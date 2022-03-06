@@ -6,6 +6,7 @@ __author__ = 'Nucleus team'
 
 import pygame
 import math
+import pathlib
 
 class Ball(pygame.sprite.Sprite):
     ##Eventually, should not need planets as a field
@@ -58,6 +59,14 @@ class Ball(pygame.sprite.Sprite):
         
         #Store game screen
         self._game = game
+
+        #Music
+        self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
+
+        self.wall_hit_sound = pygame.mixer.Sound(self.util_folder_path+'wall_hit.wav')
+        self.wall_hit_sound.set_volume(0.2)
+        self.score_sound = pygame.mixer.Sound(self.util_folder_path+'score_sound.mp3')
+        self.score_sound.set_volume(0.2)
     
     ##Collision logic
     def _collide_circle(self, other):
@@ -223,7 +232,8 @@ class Ball(pygame.sprite.Sprite):
         """
         scored = self._update_pos(planets, net) 
         self._draw()
-        
+        if scored:
+            self.score_sound.play()
         return scored
         
     ##Accessors    
@@ -268,4 +278,24 @@ class Ball(pygame.sprite.Sprite):
         """Shoots the ball by giving it an initial speed"""
         self._spd = ini_spd
         self._stopped = False
+    
+    def is_collision(self):
+        if self._pos.x>self._game.xBound-self._SIZE:
+           self.collision() 
+        elif self._pos.x< self._SIZE:
+           self.collision() 
+        elif self._pos.y < self._SIZE:
+           self.collision(vertical=True) 
+        elif self._pos.y > self._game.yBound - self._SIZE:
+           self.collision(vertical=True) 
+    
+    def collision(self, vertical=False):
+        self.wall_hit_sound.play()
+        if vertical:
+            self._spd = pygame.Vector2(self._spd[0], -self._spd[1])
+        else:
+            self._spd = pygame.Vector2(-self._spd[0], self._spd[1])
+
+
+
         
