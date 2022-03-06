@@ -27,12 +27,13 @@ class Game:
         # The way user input is tracked
         self.WKEY, self.AKEY, self.SKEY, self.DKEY = False, False, False, False
         self.ENTERKEY, self.BACKKEY = False, False
-        self.UPARROWKEY, self.DOWNARROWKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY = False, False, False, False
+        self.UPARROWKEY, self.DOWNARROwKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY = False, False, False, False
         self.QUITKEY = False
         self.SPACEKEY = False
         self.ESCAPEKEY = False
         self.UPAKEY, self.UPDKEY, self.UPWKEY, self.UPSKEY = False, False, False, False
-        self.MOUSE_POS = False
+        self.UP_MOUSE_POS, self.DOWN_MOUSE_POS = False, False
+        self.MOUSE_POS = tuple()
         self.clock = pygame.time.Clock()
 
     def setMisc(self):
@@ -56,6 +57,7 @@ class Game:
         in the constructor to track user input
         """
         for event in pygame.event.get():
+            self.MOUSE_POS = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 self.running, self.inMenu, self.QUITKEY, self.inGame = False, False, True, False
             elif event.type == pygame.KEYDOWN:
@@ -78,7 +80,7 @@ class Game:
                 elif event.key == pygame.K_UP:
                     self.UPARROWKEY = True
                 elif event.key == pygame.K_DOWN:
-                    self.DOWNARROWKEY = True
+                    self.DOWNARROwKEY = True
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.UPAKEY = True
@@ -92,13 +94,15 @@ class Game:
                 elif event.key == pygame.K_DOWN:
                     self.UPDOWNARROWKEY = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.MOUSE_POS = pygame.mouse.get_pos()
+                self.DOWN_MOUSE_POS = pygame.mouse.get_pos()
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.UP_MOUSE_POS = pygame.mouse.get_pos()
 
 
 
     def resetKeys(self):
         """Reset all keys
         """
-        self.WKEY, self.AKEY, self.SKEY, self.DKEY, self.ENTERKEY, self.BACKKEY, self.SPACEKEY, self.UPAKEY, self.UPDKEY, self.ESCAPEKEY, self.UPWKEY, self.UPSKEY, self.UPARROWKEY, self.DOWNARROWKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY, self.MOUSE_POS\
-        = False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False
+        self.WKEY, self.AKEY, self.SKEY, self.DKEY, self.ENTERKEY, self.BACKKEY, self.SPACEKEY, self.UPAKEY, self.UPDKEY, self.ESCAPEKEY, self.UPWKEY, self.UPSKEY, self.UPARROWKEY, self.DOWNARROwKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY, self.DOWN_MOUSE_POS, self.UP_MOUSE_POS\
+        = False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False
 
