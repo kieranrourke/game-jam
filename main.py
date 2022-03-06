@@ -26,6 +26,10 @@ class SpaceJam:
             power_bar= pygame.transform.scale(pygame.image.load(self.util_folder_path+'arrow.png'),(2, 100)),
             arrow = pygame.transform.scale(pygame.image.load(self.util_folder_path+'real_arrow.png'), (100,100))
         )
+        #PLACE BALL, store in sprite group
+        ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
+        self.ball = Ball(game, ball_sheet, 0,0,)
+
 
     def game_loop(self):
         self.create_level(self.level)
@@ -35,7 +39,7 @@ class SpaceJam:
             if self.game.UP_MOUSE_POS:
                 self.shooter.set_up_pos(self.game.UP_MOUSE_POS) 
             elif self.game.DOWN_MOUSE_POS:
-                self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS) 
+                self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS, self.ball._pos) 
 
             self.game.running = False if self.game.QUITKEY else True
             self.update_display() 
@@ -95,10 +99,7 @@ class SpaceJam:
                 y_pos=y_position
             ))
             
-        #PLACE BALL, store in sprite group
-        ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
-        self.ball = Ball(game, ball_sheet, 0,0,)
-        
+                
         #PLACE NET
         self.net = Net(game, 75, self.planets[0], 'NORTH')
         

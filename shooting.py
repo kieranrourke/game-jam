@@ -22,10 +22,10 @@ class Shooting:
         # The direction vector of the shot is equal to clicked_down - clicked_up
         pass    
 
-    def set_down_pos(self, pos:tuple):
+    def set_down_pos(self, pos:tuple, ball_pos:tuple):
         self.down_pos = pos
-        self.arrow_x_pos = pos[0]
-        self.arrow_y_pos = pos[1]
+        self.arrow_x_pos = ball_pos[0] 
+        self.arrow_y_pos = ball_pos[1]
         self.visible = True
     
     def set_up_pos(self, pos:tuple):
