@@ -31,8 +31,13 @@ class SpaceJam:
         self.ball = Ball(game, ball_sheet, 0,0,)
 
 
-    def game_loop(self):
+    def start_game(self):
         self.create_level(self.level)
+        self.ball.stop()
+        self.ball.place_ball(random.randint(self.game.xBound/2-100, self.game.xBound/2+100), random.randint(self.game.yBound/2-100, self.game.yBound/2+100))
+        self.game_loop()
+
+    def game_loop(self):
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
@@ -151,4 +156,4 @@ if __name__ == "__main__":
         background=pygame.image.load(util_folder_path+"space.png")
     )
     spacejam = SpaceJam(game)
-    spacejam.game_loop()
+    spacejam.start_game()

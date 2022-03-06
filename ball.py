@@ -259,7 +259,7 @@ class Ball(pygame.sprite.Sprite):
     def place_ball(self, x:int, y:int):
         """Places the ball in the level, initially with no motion"""
         self.stop()
-        self._pos = Vector2(x, y)
+        self._pos = pygame.math.Vector2(x, y)
     
     def shoot(self, ini_spd: 'pygame.Vector2'):
         """Shoots the ball by giving it an initial speed"""
