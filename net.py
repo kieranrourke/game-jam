@@ -54,8 +54,8 @@ class Net():
         if planet.get_pos().x < game.xBound /2:
             #Rim is actually 2 small rectangles on edge of mesh
             BBOARD_POS_X = POLE_POS_X - 5
-            RIM_POS_X_1 = BBOARD_POS_X + BBOARD_WIDTH - 5
-            RIM_POS_X_2 = BBOARD_POS_X + BBOARD_WIDTH - 5 + MESH_WIDTH + RIM_WIDTH
+            RIM_POS_X_1 = BBOARD_POS_X + BBOARD_WIDTH
+            RIM_POS_X_2 = BBOARD_POS_X + BBOARD_WIDTH  + MESH_WIDTH + RIM_WIDTH
             
             MESH_POS_X = RIM_POS_X_1 + RIM_WIDTH 
             
@@ -64,8 +64,8 @@ class Net():
         else:
             #Rim is actually 2 small rectangles on edge of mesh
             BBOARD_POS_X = POLE_POS_X - POLE_WIDTH - 5
-            RIM_POS_X_1 = BBOARD_POS_X - RIM_WIDTH + 5
-            RIM_POS_X_2 = BBOARD_POS_X - RIM_WIDTH + 5 - MESH_WIDTH - RIM_WIDTH
+            RIM_POS_X_1 = BBOARD_POS_X - RIM_WIDTH
+            RIM_POS_X_2 = BBOARD_POS_X - RIM_WIDTH - MESH_WIDTH - RIM_WIDTH
             
             MESH_POS_X = RIM_POS_X_2 + RIM_WIDTH 
                     
