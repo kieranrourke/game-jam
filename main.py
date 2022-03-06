@@ -1,10 +1,9 @@
 import pygame
-from game import Game, Button
+from game import Game
 from planets import Planet
 from net import Net
 from ball import Ball
 from shooting import Shooting
-from menu import Menu
 
 import pathlib
 import random
@@ -18,66 +17,55 @@ class SpaceJam:
     def __init__(self, game) -> None:
         self.game = game
         self.planets = []
-        self.ball = None
-        self.net = None
-        self.level = 1 
+        self.net = None 
+        self.level = 3 
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
-
         self.shooter = Shooting(
             game,
             power_bar= pygame.transform.scale(pygame.image.load(self.util_folder_path+'arrow.png'),(2, 100)),
             arrow = pygame.transform.scale(pygame.image.load(self.util_folder_path+'real_arrow.png'), (100,100))
         )
-
-        self.menu = Menu(game)
-
-        #Reset Button
-        self.reset_button = Button(
-            game=game,
-            x=self.game.xBound-150,
-            y=15,
-            text="Reset Level",
-            color=(255,165,0),
-            text_size=30
-        )
-
-        self.skip_button= Button(
-            game=game,
-            x=self.game.xBound-250,
-            y=15,
-            text="Score",
-            color=(255,165,0),
-            text_size=30
-        )
-
-        #PLACE BALL, store in sprite group
+        #Initialize ball
         ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
-        self.ball = Ball(game, ball_sheet, 0,0,)
-
+        self.ball = Ball(game, ball_sheet, 0,0,)        
+        self.ball_ini_x = 0
+        self.ball_ini_y = 0
+        self.is_shot = False
+        self.MAX_SHOT_TIME = 30
+       
+        
+    def reset_ball(self):
+        """Places ball at its initial position in the level"""
+        self.is_shot = False
+        self.ball.stop()
+        self.ball.place_ball(self.ball_ini_x, self.ball_ini_y)
 
     def start_game(self):
         self.create_level(self.level)
-        self.game.inMenu = True
-        self.menu.display_loop()
+        self.ball.stop()
+        self.ball_ini_x = random.randint(self.game.xBound/2-100, 
+                                         self.game.xBound/2+100)
+        self.ball_ini_y = random.randint(self.game.yBound/2-100, 
+                                         self.game.yBound/2+100)
+        self.ball.place_ball(self.ball_ini_x, self.ball_ini_y)
         self.game_loop()
-        
+
     def game_loop(self):
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
-            if self.game.UP_MOUSE_POS:
-                self.shooter.set_up_pos(self.game.UP_MOUSE_POS) 
-            elif self.game.DOWN_MOUSE_POS:
-                self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS, self.ball._pos) 
-                if self.skip_button.is_clicked(self.game.DOWN_MOUSE_POS):
-                    self.finish_level()
-                elif self.reset_button.is_clicked(self.game.DOWN_MOUSE_POS):
-                    self.reset_level()
+            #Can only use shooter when ball is still
+            if self.is_shot == False:
+                if self.game.UP_MOUSE_POS:
+                    self.shooter.set_up_pos(self.game.UP_MOUSE_POS) 
+                    self.shoot()
+                elif self.game.DOWN_MOUSE_POS:
+                    self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS, self.ball._pos) 
+            #Reset on ball stop?
+            elif self.game.SPACEKEY:
+                self.reset_ball()
 
-            if self.game.QUITKEY:
-                self.game.running = False 
-                pygame.quit()
-
+            self.game.running = False if self.game.QUITKEY else True
             self.update_display() 
             self.game.clock.tick(60)
     
@@ -109,73 +97,55 @@ class SpaceJam:
         self.planets = []
         minx = 0  #Offset to stop a lot of planets from spawning together
         inc = int(self.game.xBound/level)
-        self.ball.stop()
-        self.ball.place_ball(random.randint(self.game.xBound/2-100, self.game.xBound/2+100), random.randint(self.game.yBound/2-100, self.game.yBound/2+100))
-
         for i in range(level):
             x_position = random.randint(minx, minx+100)
             if i % 2 == 0:
-                if minx > self.game.xBound/2-128 and minx < self.game.xBound+128:
-                    y_position = random.randint(100, self.game.yBound/2-230)
-                else:
-                    y_position = random.randint(100, self.game.yBound/2-100)
+                y_position = random.randint(100, self.game.yBound/2-100)
             else:
-                if minx > self.game.xBound/2-128 and minx < self.game.xBound+128:
-                    y_position = random.randint(self.game.yBound/2-200, self.game.yBound-100) 
-                else:
-                    y_position = random.randint(self.game.yBound/2-100, self.game.yBound-100) 
+                y_position = random.randint(self.game.yBound/2-100, self.game.yBound-100) 
 
             planet_image = pygame.image.load(self.util_folder_path+'/planets/'+random.choice(os.listdir(self.util_folder_path+'/planets/')))  #Randomly picks a planet image
             
-            size = random.randint(1,3)
-            if minx<self.game.xBound-100:
+            if minx < self.game.xBound - 100:  #Change the 100 to a non hardcoded value 
                 minx+=inc
             else:
                 minx=0
             
             ##Uses simple planet models atm
-
-
-            self.planets.append(self.create_planet(size,
-                                              x_position, y_position))
-            # self.planets.append(Planet(
-            #     game=self.game,
-            #     image=planet_image,
-            #     size = 100,
-            #     x_pos=x_position,
-            #     y_pos=y_position
-            # ))
-       
+#             self.planets.append(self.create_planet(random.randint(1, 3), 
+#                                               x_position, y_position))
+            self.planets.append(Planet(
+                game=self.game,
+                image=planet_image,
+                size = 100,
+                x_pos=x_position,
+                y_pos=y_position
+            ))
+            
                 
         #PLACE NET
         self.net = Net(game, 75, self.planets[random.randint(0, len(self.planets)-1)], 'NORTH')
-
-        # self.net = Net(game, 75, self.planets[-1], 'NORTH')
-
         
     def clear_level(self):
         self.planets = []
-    
-    def draw_level(self):
-        font = self.game.font
-        level = font.render("Level: "+str(self.level), True, (255,255,255))
-        self.game.draw(level, self.game.xBound/2-150, 10)
+        self.ball.stop()
 
     def finish_level(self):
         """Called when a user finishes a level
         """
         self.clear_level()
-        self.level+=1
-        self.create_level(self.level)
-    
-    def reset_level(self):
-        self.clear_level()
-        self.create_level(self.level)
-
     
     def update_planets(self):
         for planet in self.planets:
             planet.draw_planet()
+    
+    def shoot(self):
+        """Shoots the ball using the shooter"""
+        shot_force = self.shooter.calculate_force()
+        if shot_force.magnitude() > 0:
+            self.ball.shoot(shot_force)
+            self.is_shot = True
+                
     
     def update_ball(self) -> bool:
         """updates ball and tracks if player has scored
@@ -202,9 +172,6 @@ class SpaceJam:
         self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
         self.update_shooter()
-        self.reset_button.draw_button()
-        # self.skip_button.draw_button()
-        self.draw_level()
         pygame.display.update()
     
 if __name__ == "__main__":
