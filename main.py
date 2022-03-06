@@ -31,7 +31,6 @@ class SpaceJam:
         self.planets = []
         minx = 0  #Offset to stop a lot of planets from spawning together
         inc = self.game.xBound/level
-        print(inc)
         for i in range(level):
             x_position = random.randint(minx, i*100) 
             if i % 2 == 0:
@@ -50,8 +49,7 @@ class SpaceJam:
             self.planets.append(Planet(
                 game=self.game,
                 image=planet_image,
-                x_size=100,
-                y_size=100,
+                size=100,
                 x_pos=x_position,
                 y_pos=y_position
             ))

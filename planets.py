@@ -13,7 +13,7 @@ class Planet(pygame.sprite.Sprite):
         
         #Initialise sprite image (might change to sheet later)
         self._SIZE = size
-        self.image = image   
+        self.image = pygame.transform.scale(image, (self._SIZE, self._SIZE))   
         ##A way to scale images later:
         #self.image = pygame.transform.scale(image, (size, size))
         
