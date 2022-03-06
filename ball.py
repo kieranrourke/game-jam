@@ -88,7 +88,8 @@ class Ball(pygame.sprite.Sprite):
         if scored:
             print("scored, reset level!")
         else:
-            print("not scored :(")
+            pass
+            # print("not scored :(")
         return scored
 
     #def _radial_edge(self, direction: 'pygame.Vector2'):

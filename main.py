@@ -128,16 +128,10 @@ class SpaceJam:
 
     def update_display(self):
         self.game.resetKeys()
-        self.update_planets()
-        self.update_ball()
-        self.update_shooter()
-        pygame.display.update()
-        
-    def update_display(self):
-        self.game.resetKeys()
         self.update_net()
         self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
+        self.update_shooter()
         pygame.display.update()
     
 if __name__ == "__main__":
