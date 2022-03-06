@@ -26,7 +26,7 @@ class Planet(pygame.sprite.Sprite):
             
         self.game = game        
 
-    def accel_applied(self, pos:'pygame.Vector2', mass: int) -> 'pygame.Vector2':
+    def accel_applied(self, pos:'pygame.Vector2', other_mass: int) -> 'pygame.Vector2':
         """Returns the amount of acceleration applied to a given object
         Args:
             pos (Vector2): position of object
@@ -35,30 +35,24 @@ class Planet(pygame.sprite.Sprite):
             tuple: x and y components of the force 
         """
         #Higher factor means more force applied (1 is default)
-        ACCEL_FACTOR = 1
+        GRAV_FACTOR = 1
         
-        center = self.get_img_center()
-        x_distance = center.x - pos.x
-        y_distance = center.y - pos.y
+        center = self.get_center()
         
-        #if distance is +ve, planet coord > object coord. 
-        #Should increase object coord
-        x_sign = 1 if x_distance >= 0 else -1
-        #Currently unsure if should keep or not.
-        y_sign = 1 if y_distance >= 0 else -1
-        
-        #Technically, should never divide by 0 when collisions exist. 
-        #So as a temp measure, set x_distance to 1 IFF it is eequal to 0
-        x_distance += 1 if x_distance == 0 else 0
-        angle = math.atan(y_distance/x_distance)
+        #Normalized direction of gravity
+        grav_dir = (center - pos).normalize()
 
         total_distance = self.pythag(center, pos) 
-        #see pr_ev comment about zero div
-        total_distance += 1 if total_distance == 0 else 0
-        total_accel = ACCEL_FACTOR * self.get_mass() / (total_distance * mass)
+        #Symptomatic of another problem, should not happen
+        if total_distance == 0:
+            raise ArithmeticError("total_distance is 0, center == pos")
         
-        return pygame.math.Vector2(total_accel*math.cos(angle) * x_sign, 
-                                   total_accel*math.sin(angle) * y_sign)
+        grav_mag = GRAV_FACTOR * self.get_mass() / (total_distance * other_mass)
+        
+
+        return pygame.math.Vector2(grav_mag * grav_dir.x, 
+                                   grav_mag * grav_dir.y)
+    
 
     @staticmethod
     def pythag(pos1: 'pygame.Vector2', pos2:'pygame.Vector2') -> float:
@@ -75,6 +69,8 @@ class Planet(pygame.sprite.Sprite):
         """Draws the planet on the screen
         """
         self.game.screen.blit(self.image, (self._pos.x, self._pos.y))
+        #pygame.draw.circle(self.game.screen, (0,0,0), 
+                           #self.get_center(), self.radius)
                    
     ##Accessors        
     def get_mass(self) -> int:
@@ -97,7 +93,7 @@ class Planet(pygame.sprite.Sprite):
         """
         return self._pos.x, self._pos.y   
     
-    def get_img_center(self) -> 'pygame.Vector2':
+    def get_center(self) -> 'pygame.Vector2':
         """Returns the center of the image
         Returns:
             Vector2: center of the image in 2D vector format [x,y]
