@@ -50,9 +50,9 @@ class Ball(pygame.sprite.Sprite):
         self.radius = self._SIZE/2   
         
         #Set max spd/accel (absolute val. Set high to "uncap")
-        self._MAX_SPD = 3
+        self._MAX_SPD = 10
         self._MAX_ACCEL  = 1
-        self._MIN_SPD_MAG  = 1.5 #Goes to 0 if below this spd
+        self._MIN_SPD_MAG  = 1 #Goes to 0 if below this spd
         #Set to true later, shooting it sets it to False
         self._stopped = False 
         
@@ -69,7 +69,7 @@ class Ball(pygame.sprite.Sprite):
         return pygame.sprite.collide_rect(self, other)    
     
     #Highly cohesive rn
-    def _check_collisions(self, planets: ['Planet'], net: 'Net') -> bool:
+    def _check_collisions(self, planets: ['Planet'], net: 'Net') -> None:
         """"""
         #Hitbox update
         self.rect = pygame.Rect(tuple(self._pos), (self._SIZE, self._SIZE))
@@ -86,19 +86,7 @@ class Ball(pygame.sprite.Sprite):
         for solid in net.get_solids():
             if self._collide_rect(solid):
                 self.rebound(solid)
-        
-        #Returns True if ball in net
-        scored = self._collide_rect(net.get_mesh())
-#         if scored:
-#             print("scored, reset level!")
-        return scored
 
-    #def _radial_edge(self, direction: 'pygame.Vector2'):
-        #"""Returns a point on the edge of the ball's radius
-        #going in a given normalized direction (length of 1)."""
-        ##Starts from center, displaces by the radius in the given direction
-        #return Vector2(self._pos.x+ self.radius*direction.x,
-                       #self._pos.y+ self.radius*direction.y)
     
     def rebound(self, collision: 'pygame.Sprite') -> None:
         """Bounces ball back from collision point with amortised speed.
@@ -181,8 +169,8 @@ class Ball(pygame.sprite.Sprite):
         #Collision check overrides speed on rebounds: Could be useful to set to 0 later.
         scored = self._check_collisions(planets, net)
         self._pos += self._spd
-        
-        return scored
+        #Check if in net after any rebounds
+        return self._collide_rect(net.get_mesh())
     
     def _update_image(self) -> None:
         """Update image of the sprite depending on 
@@ -250,6 +238,8 @@ class Ball(pygame.sprite.Sprite):
         width, height = self.image.get_size()
         return pygame.Vector2(self._pos.x + width / 2, 
                               self._pos.y +  height / 2)   
+    def is_stopped(self):
+        return self._stopped    
     
     ##Mutators
     def stop(self):
@@ -259,7 +249,7 @@ class Ball(pygame.sprite.Sprite):
     def place_ball(self, x:int, y:int):
         """Places the ball in the level, initially with no motion"""
         self.stop()
-        self._pos = pygame.math.Vector2(x, y)
+        self._pos = pygame.Vector2(x, y)
     
     def shoot(self, ini_spd: 'pygame.Vector2'):
         """Shoots the ball by giving it an initial speed"""

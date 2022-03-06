@@ -17,28 +17,39 @@ class Shooting:
         self.arrow_x_pos = 100
         self.arrow_y_pos = 100
         self.visible = False
+        self._SENS = 0.05
 
-    def calculate_force(self) -> tuple:
-        # The direction vector of the shot is equal to clicked_down - clicked_up
-        pass    
+    def calculate_force(self) -> 'pygame.Vector2':
+        # The direction  of the shot is the norm of clicked_down - clicked_up  
+        shot_vec = (pygame.Vector2(self.down_pos) - pygame.Vector2(self.up_pos))
+        
+        #Click with no movement should not shoot
+        if shot_vec.magnitude() != 0:
+            shot_dir = shot_vec.normalize()
+            #Higher sensitiy means more power
+            shot_mag = shot_vec.magnitude() * self._SENS
+            return pygame.Vector2(shot_dir.x * shot_mag, shot_dir.y * shot_mag)
+        else: 
+            #No initial spd
+            return pygame.Vector2(0,0)
 
     def set_down_pos(self, pos:tuple, ball_pos:tuple):
         self.down_pos = pos
         self.arrow_x_pos = ball_pos[0] 
         self.arrow_y_pos = ball_pos[1]
         self.visible = True
-    
+
     def set_up_pos(self, pos:tuple):
         self.up_pos= pos
         self.calculate_force()
         self.visible = False
-    
+        
     def draw_arrow(self):
         self.game.draw(self.arrow_copy, self.arrow_x_pos, self.arrow_y_pos)
-    
+
     def draw_progress_bar(self, x, y):
         self.game.draw(self.power_bar_copy, x, y) 
-    
+
     def update_arrow(self):
         self.up_pos = self.game.MOUSE_POS
         self.distance = math.sqrt((self.down_pos[0] - self.up_pos[0])**2 + (self.down_pos[1] - self.up_pos[1])**2)
@@ -54,10 +65,10 @@ class Shooting:
             self.arrow_copy = pygame.transform.rotate(self.down_arrow, math.degrees(angle))
         else:
             self.arrow_copy = pygame.transform.rotate(self.up_arrow, math.degrees(angle))
-        
+
         self.arrow.get_size()
         self.draw_arrow()
-    
+
     def update_progress_bar(self):
         self.power_bar_copy = pygame.transform.scale(self.power_bar, (10, int(self.distance/2)))
         if self.arrow_x_pos > 150:
@@ -65,4 +76,3 @@ class Shooting:
         else:
             self.draw_progress_bar(self.arrow_x_pos+200,self.arrow_y_pos)
 
-        
