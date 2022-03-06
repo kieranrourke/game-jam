@@ -108,9 +108,4 @@ if __name__ == "__main__":
         hgt=100,
         planet=game,
         direction='NORTH',
-        image=pygame.image.load(util_folder_path+"net.png")
-    )
-    
-    
-    
-    
+        image=pygame.image.load(util_folder_path+"net.png"))

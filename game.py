@@ -27,7 +27,7 @@ class Game:
         # The way user input is tracked
         self.WKEY, self.AKEY, self.SKEY, self.DKEY = False, False, False, False
         self.ENTERKEY, self.BACKKEY = False, False
-        self.UPARROWKEY, self.DOWNARROwKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY = False, False, False, False
+        self.UPARROWKEY, self.DOWNARROWKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY = False, False, False, False
         self.QUITKEY = False
         self.SPACEKEY = False
         self.ESCAPEKEY = False
@@ -78,7 +78,7 @@ class Game:
                 elif event.key == pygame.K_UP:
                     self.UPARROWKEY = True
                 elif event.key == pygame.K_DOWN:
-                    self.DOWNARROwKEY = True
+                    self.DOWNARROWKEY = True
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.UPAKEY = True
@@ -99,6 +99,6 @@ class Game:
     def resetKeys(self):
         """Reset all keys
         """
-        self.WKEY, self.AKEY, self.SKEY, self.DKEY, self.ENTERKEY, self.BACKKEY, self.SPACEKEY, self.UPAKEY, self.UPDKEY, self.ESCAPEKEY, self.UPWKEY, self.UPSKEY, self.UPARROWKEY, self.DOWNARROwKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY, self.MOUSE_POS\
+        self.WKEY, self.AKEY, self.SKEY, self.DKEY, self.ENTERKEY, self.BACKKEY, self.SPACEKEY, self.UPAKEY, self.UPDKEY, self.ESCAPEKEY, self.UPWKEY, self.UPSKEY, self.UPARROWKEY, self.DOWNARROWKEY, self.UPUPARROWKEY, self.UPDOWNARROWKEY, self.MOUSE_POS\
         = False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False
 
