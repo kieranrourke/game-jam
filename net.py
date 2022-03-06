@@ -120,4 +120,9 @@ class Net(pygame.sprite.Group):
     def update(self)-> None:
         self._draw()
     
+    def get_solids(self) -> 'pygame.Group':
+        return pygame.sprite.Group(self._rim, self._bboard, self._pole)
+    
+    def get_mesh(self) -> 'pygame.Sprite':
+        return self._netmesh
     
