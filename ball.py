@@ -89,8 +89,8 @@ class Ball(pygame.sprite.Sprite):
         
         #Returns True if ball in net
         scored = self._collide_rect(net.get_mesh())
-        if scored:
-            print("scored, reset level!")
+#         if scored:
+#             print("scored, reset level!")
         return scored
 
     #def _radial_edge(self, direction: 'pygame.Vector2'):
