@@ -23,6 +23,7 @@ class Game:
             self.background, (xBound, yBound))
         # Sets up the game loop Variables
         self.running = True
+        self.inMenu = True
 
         # The way user input is tracked
         self.WKEY, self.AKEY, self.SKEY, self.DKEY = False, False, False, False
