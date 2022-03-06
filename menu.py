@@ -18,7 +18,7 @@ class Menu():
             self.game.setMisc()
             self.game.checkEvents()
             self.display_message()
-            if self.game.DOWN_MOUSE_POS:
+            if self.game.UP_MOUSE_POS:
                self.start_game() 
             self.game.resetKeys()
             pygame.display.update()

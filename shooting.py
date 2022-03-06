@@ -21,6 +21,7 @@ class Shooting:
 
     def calculate_force(self) -> 'pygame.Vector2':
         # The direction  of the shot is the norm of clicked_down - clicked_up  
+        print(self.down_pos, self.up_pos)
         shot_vec = (pygame.Vector2(self.down_pos) - pygame.Vector2(self.up_pos))
         
         #Click with no movement should not shoot
