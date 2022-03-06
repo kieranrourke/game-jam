@@ -19,7 +19,7 @@ class SpaceJam:
         self.game = game
         self.planets = []
         self.net = None 
-        self.level = 1 
+        self.level = 3 
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
         self.shooter = Shooting(
             game,
@@ -54,11 +54,7 @@ class SpaceJam:
             color=(255,165,0),
             text_size=30
         )
-
-        self.score = 0
-        self.num_reset_ball = 0
-        self.num_reset_level = 0
-
+        
     def reset_ball(self):
         """Places ball at its initial position in the level"""
         self.is_shot = False
@@ -68,11 +64,6 @@ class SpaceJam:
     def start_game(self):
         self.create_level(self.level)
         self.ball.stop()
-        self.ball_ini_x = random.randint(self.game.xBound/2-100, 
-                                         self.game.xBound/2+100)
-        self.ball_ini_y = random.randint(self.game.yBound/2-100, 
-                                         self.game.yBound/2+100)
-        self.ball.place_ball(self.ball_ini_x, self.ball_ini_y)
         
         self.game.inMenu = True
         self.menu.display_loop()
@@ -82,6 +73,16 @@ class SpaceJam:
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
+            
+            if self.game.DOWN_MOUSE_POS != False:
+                print(self.game.DOWN_MOUSE_POS)
+                #Checks for reset button
+                if self.reset_button.is_clicked(self.game.DOWN_MOUSE_POS):
+                    self.reset_level()     
+                #Skip button
+                if self.skip_button.is_clicked(self.game.DOWN_MOUSE_POS):
+                    self.finish_level() 
+                    
             #Can only use shooter when ball is still
             if self.is_shot == False:
                 if self.game.UP_MOUSE_POS:
@@ -89,23 +90,19 @@ class SpaceJam:
                     self.shoot()
                 elif self.game.DOWN_MOUSE_POS:
                     self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS, self.ball._pos) 
-                    if self.skip_button.is_clicked(self.game.DOWN_MOUSE_POS):
-                        self.finish_level()
-                    elif self.reset_button.is_clicked(self.game.DOWN_MOUSE_POS):
-                        self.num_reset_level+=1
-                        self.reset_level()
-
             #Reset on ball stop?
             elif self.game.SPACEKEY:
-                self.num_reset_ball += 1
                 self.reset_ball()
+           
+                             
             
-            elif self.game.QUITKEY:
+            if self.game.QUITKEY:
                 self.game.running = False 
                 pygame.quit()
-
-            self.update_display() 
-            self.game.clock.tick(60)
+            else:
+                #Should not update if surface quit
+                self.update_display() 
+                self.game.clock.tick(60)
     
     def create_planet(self, planet: int, x_position, y_position):
         """Chooses a planet size to create from the predifined planets, 
@@ -172,7 +169,14 @@ class SpaceJam:
             #     y_pos=y_position
             # ))
        
-                
+        
+        #Place ball
+        self.ball_ini_x = random.randint(self.game.xBound/2-100, 
+                                             self.game.xBound/2+100)
+        self.ball_ini_y = random.randint(self.game.yBound/2-100, 
+                                             self.game.yBound/2+100)
+        self.ball.place_ball(self.ball_ini_x, self.ball_ini_y)        
+        
         #PLACE NET
         self.net = Net(game, 75, self.planets[random.randint(0, len(self.planets)-1)], 'NORTH')
 
@@ -182,16 +186,10 @@ class SpaceJam:
         self.planets = []
         self.reset_ball()
 
-    def draw_score(self):
-        font = self.game.font
-        score = font.render("Score: "+str(self.score), True, (255,255,255))
-        self.game.draw(score, self.game.xBound/2-150, 10)
-    
     def draw_level(self):
-        font = pygame.font.Font('freesansbold.ttf', 44)
-        level= font.render("Level: "+str(self.level), True, (192,192,192))
-        self.game.draw(level, self.game.xBound/2-350, 25)
-
+        font = self.game.font
+        level = font.render("Level: "+str(self.level), True, (255,255,255))
+        self.game.draw(level, self.game.xBound/2-150, 10)
 
     def finish_level(self):
         """Called when a user finishes a level
@@ -199,10 +197,6 @@ class SpaceJam:
         self.clear_level()
         self.level+=1
         self.create_level(self.level)
-        score = 100 - self.num_reset_ball*10 - self.num_reset_level*20
-        if score < 0:
-            score = 0
-        self.score += score
     
     def reset_level(self):
         self.clear_level()
@@ -248,7 +242,6 @@ class SpaceJam:
         self.reset_button.draw_button()
         # self.skip_button.draw_button()
         self.draw_level()
-        self.draw_score()
         pygame.display.update()
 
 
