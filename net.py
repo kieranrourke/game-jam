@@ -25,7 +25,11 @@ class rectSprite(pygame.sprite.Sprite):
         self.surface.blit(self.image, (self.x_pos, self.y_pos))   
 
     def get_center(self) -> 'pygame.Vector2':
-        return pygame.Vector2(self.rect.center)        
+        return pygame.Vector2(self.rect.center)     
+    
+    def get_mass(self) -> 'pygame.Vector2':
+        """Uses mass to calculate area"""
+        return self.rect.x * self.rect.y
 
 class Net():
 
