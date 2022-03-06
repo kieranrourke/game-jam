@@ -1,6 +1,8 @@
+from click import progressbar
 import pygame
 from game import Game
 from planets import Planet
+from shooting import Shooting
 from net import Net
 import pathlib
 import random
@@ -15,6 +17,11 @@ class SpaceJam:
         self.ball = None
         self.level = 8
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
+        self.shooter = Shooting(
+            game,
+            power_bar= pygame.transform.scale(pygame.image.load(self.util_folder_path+'arrow.png'),(2, 100)),
+            arrow = pygame.transform.scale(pygame.image.load(self.util_folder_path+'real_arrow.png'), (100,100))
+        )
 
     
     def game_loop(self):
@@ -22,8 +29,14 @@ class SpaceJam:
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
+            if self.game.UP_MOUSE_POS:
+                self.shooter.set_up_pos(self.game.UP_MOUSE_POS) 
+            elif self.game.DOWN_MOUSE_POS:
+                self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS) 
+
             self.game.running = False if self.game.QUITKEY else True
             self.update_display() 
+            self.game.clock.tick(60)
         
     
     
@@ -69,11 +82,18 @@ class SpaceJam:
     
     def update_ball(self):
         pass
+
+    def update_shooter(self):
+        if self.shooter.visible:
+            self.shooter.update_arrow()
+            self.shooter.update_progress_bar()
+
     
     def update_display(self):
         self.game.resetKeys()
         self.update_planets()
         self.update_ball()
+        self.update_shooter()
         pygame.display.update()
 
 
