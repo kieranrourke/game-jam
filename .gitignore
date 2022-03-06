@@ -1,5 +1,8 @@
 # Object file
 *.o
-
+__pycache__
+cpython-39.pyc
 # Ada Library Information
 *.ali
+.DS_Store
+cpython-39.pyc
