@@ -2,7 +2,7 @@ import pygame
 import math
 
 __date__ = '3/5/22'
-__version__ = 'V0.3'
+__version__ = 'V0.4'
 __author__ = 'Nucleus team'
 
 class Planet(pygame.sprite.Sprite):
@@ -13,9 +13,11 @@ class Planet(pygame.sprite.Sprite):
         
         #Initialise sprite image (might change to sheet later)
         self._SIZE = size
-        #self.image = image   #Usual image storing
+        
+        #self.image = image   #Std. image storing
         #A way to scale images later:
         self.image = pygame.transform.scale(image, (size, size))
+
         
         self._pos = pygame.Vector2(x_pos, y_pos)
         

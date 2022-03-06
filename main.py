@@ -2,13 +2,10 @@ import pygame
 from game import Game
 from planets import Planet
 from net import Net
-from ball import Ball
 import pathlib
 import random
 import os
 import pdb
-from spriteSheet import SpriteSheet 
-import time #For debug slowing down
 
 
 class SpaceJam:
@@ -16,75 +13,31 @@ class SpaceJam:
         self.game = game
         self.planets = []
         self.ball = None
-        self.level = 8 #has to be 8?
+        self.level = 8
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
 
+    
     def game_loop(self):
         self.create_level(self.level)
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
             self.game.running = False if self.game.QUITKEY else True
-            
-            #DEBUG
-            if game.DOWNARROWKEY == True:
-                print("MDown")
-                mouse_pos = pygame.mouse.get_pos()
-                #create 1by1 sprite centered on mouse_pos
-                mouse_box = pygame.sprite.Sprite()
-                mouse_box.rect = pygame.Rect(mouse_pos, (1,1))
-                mouse_box.radius = 1 
-                print(pygame.sprite.collide_circle(mouse_box, 
-                                                   self.planets[0]))
-                
-                planet_rect = pygame.Rect(self.planets[0].get_pos_tup(),
-                                          (self.planets[0].get_size(),
-                                           self.planets[0].get_size()))
-                #planet_rect = pygame.Rect(
-                                     #tuple(self.planets[0].get_img_center()),
-                                     #(self.planets[0].get_size(),
-                                     #self.planets[0].get_size()))
-                pygame.draw.rect(game.screen, (0,255,0), planet_rect)
-                self.update_display() 
-            time.sleep(0.002) #determines game speed in sec delay
-            
             self.update_display() 
+        
     
-    def create_planet(self, planet: int, x_position, y_position):
-        """Chooses a planet size to create from the predifined planets, 
-        at the given position. Valid planet sizes are 1, 2, or 3. 
-        invalid inputs default to 3"""
-        #Create planet types, increase in size with number:
-        
-        if planet == 1: #smallest planet, size/image hardcoded
-            planet_image = pygame.image.load(self.util_folder_path+
-                                             '/planets/planet_32.png')
-            SIZE = 32
-            
-        elif planet == 2:
-            planet_image = pygame.image.load(self.util_folder_path+
-                                             '/planets/planet_64.png')
-            SIZE = 64  
-            
-        else:
-            planet_image = pygame.image.load(self.util_folder_path+
-                                             '/planets/planet_128.png')
-            SIZE = 128
-            
-        return Planet(self.game, planet_image, SIZE, x_position, y_position) 
-        
+    
     def create_level(self, level):
-        #PLACE PLANETS, store in sprite group
         self.planets = []
         minx = 0  #Offset to stop a lot of planets from spawning together
         inc = self.game.xBound/level
-        #print(inc)
-        for i in range(1):
+        for i in range(level):
             x_position = random.randint(minx, i*100) 
             if i % 2 == 0:
                 y_position = random.randint(100, self.game.yBound/2-100)
             else:
                 y_position = random.randint(self.game.yBound/2-100, self.game.yBound-100) 
+
 
             planet_image = pygame.image.load(self.util_folder_path+'/planets/'+random.choice(os.listdir(self.util_folder_path+'/planets/')))  #Randomly picks a planet image
             
@@ -93,18 +46,15 @@ class SpaceJam:
             else:
                 minx=0
             
-            self.planets.append(self.create_planet(random.randint(1, 3), 
-                                              x_position, y_position))
-            
-        #PLACE BALL, store in sprite group
-        ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
-        self.ball = Ball(game, ball_sheet, 0,0,)
-        
-        #PLACE NET
+            self.planets.append(Planet(
+                game=self.game,
+                image=planet_image,
+                size=100,
+                x_pos=x_position,
+                y_pos=y_position
+            ))
 
     
-
-
     def clear_level(self):
         pass
 
@@ -113,44 +63,33 @@ class SpaceJam:
         """
         self.clear_level()
     
-    ##Update functions
-    #def groupcollide_mask(group1: 'SpriteGroup', 
-                          #group2: 'SpriteGroup') -> 'pygame.Sprite_dict':
-        #"""Find all sprites that collide between two groups using their masks.
-        #Does not remove sprites from their groups.
-        #"""
-        ##I wonder if collide_mask call should be converted to a bool statement
-        #return pygame.sprite.groupcollide(self, group, False, False, 
-                                        #pygame.sprite.collide_mask)    
-    
     def update_planets(self):
         for planet in self.planets:
             planet.draw_planet()
     
     def update_ball(self):
-        #Uses planets for acceleration
-        self.ball.update(self.planets, None)
+        pass
     
     def update_display(self):
         self.game.resetKeys()
-        self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
+        self.update_ball()
         pygame.display.update()
 
 
-#def game_loop(game, planet,net):
-    #while game.running:
-        #game.setMisc()
-        #game.checkEvents()
-        #game.running = False if game.QUITKEY else True
-        #planet.draw_planet()
-        #net.draw()
+def game_loop(game, planet,net):
+    while game.running:
+        game.setMisc()
+        game.checkEvents()
+        game.running = False if game.QUITKEY else True
+        planet.draw_planet()
+        net.draw()
         
-        #update_display(game)
+        update_display(game)
 
-#def update_display(game):
-    #game.resetKeys()
-    #pygame.display.update()
+def update_display(game):
+    game.resetKeys()
+    pygame.display.update()
     
 if __name__ == "__main__":
     util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
@@ -164,14 +103,9 @@ if __name__ == "__main__":
     spacejam = SpaceJam(game)
     spacejam.game_loop()
     
-    #net = Net(
-        #game = game,
-        #hgt=100,
-        #planet=game,
-        #direction='NORTH',
-        #image=pygame.image.load(util_folder_path+"net.png")
-    #)
-    
-    
-    
-    
+    net = Net(
+        game = game,
+        hgt=100,
+        planet=game,
+        direction='NORTH',
+        image=pygame.image.load(util_folder_path+"net.png"))
