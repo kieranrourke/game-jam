@@ -1,7 +1,7 @@
 """Ball class for space basketball"""
 
 __date__ = '3/5/22'
-__version__ = 'V0.6.2'
+__version__ = 'V0.7'
 __author__ = 'Nucleus team'
 
 import pygame
@@ -52,7 +52,9 @@ class Ball(pygame.sprite.Sprite):
         #Set max spd/accel (absolute val. Set high to "uncap")
         self._MAX_SPD = 3
         self._MAX_ACCEL  = 1
-        self._MIN_ACCEL  = 0.1 #TODO: implment in setter(?) or remove
+        self._MIN_SPD_MAG  = 1.5 #Goes to 0 if below this spd
+        #Set to true later, shooting it sets it to False
+        self._stopped = False 
         
         #Store game screen
         self._game = game
@@ -75,15 +77,21 @@ class Ball(pygame.sprite.Sprite):
         #check planet collision:
         for planet in planets:
             if self._collide_circle(planet):
-                #print("planet rebound")
                 self.rebound(planet)
+                #Set spped to 0 if below min spd threshold
+                if self._spd.magnitude() < self._MIN_SPD_MAG:
+                    self.stop()                
         
         #check net collision TODO:
-        #something like for solid in net, rebound. After: check for goal 
-        #for 
-        #return bool for scored
-            
-        return False
+        for solid in net.get_solids():
+            if self._collide_rect(solid):
+                self.rebound(solid)
+        
+        #Returns True if ball in net
+        scored = self._collide_rect(net.get_mesh())
+#         if scored:
+#             print("scored, reset level!")
+        return scored
 
     #def _radial_edge(self, direction: 'pygame.Vector2'):
         #"""Returns a point on the edge of the ball's radius
@@ -92,7 +100,7 @@ class Ball(pygame.sprite.Sprite):
         #return Vector2(self._pos.x+ self.radius*direction.x,
                        #self._pos.y+ self.radius*direction.y)
     
-    def rebound(self, collision: 'Sprite') -> None:
+    def rebound(self, collision: 'pygame.Sprite') -> None:
         """Bounces ball back from collision point with amortised speed.
         Speed depends on mass difference between objects (UNIMPLEMENTED).
         Thinking of also setting position to edge of other object... 
@@ -100,15 +108,16 @@ class Ball(pygame.sprite.Sprite):
         #FIXME*: Somehow, always leads ball to bottom right of planets 
         #*(might have to do with initial cons tbh)
         #Amortization factor, remove later
-        AMORTIZE_FAC = 1.1
+        AMORTIZE_FAC = 1.2
         #Vector sub finds direction between 2 points (col -> pos)
         col_dir = (self.get_center() - collision.get_center()).normalize() #unit vec
         
-        #TODO: Change to amortize depending on mass later
+        #TODO: Change to amortize depending on mass difference later
         col_mag = self._spd.magnitude() / AMORTIZE_FAC
         #Create spd vector using magnitude and direction. 
         col_spd = pygame.Vector2(col_mag * col_dir.x, col_mag * col_dir.y)
         #Set current spd to resultant collision spd
+        
         self._set_spd(col_spd)
     
     def _sum_acceleration(ball: 'Ball', planets: ['Planet']) -> 'pygame.Vector2':
@@ -118,7 +127,8 @@ class Ball(pygame.sprite.Sprite):
         total_accel = pygame.Vector2() #0,0
     
         for planet in planets:
-            total_accel += planet.accel_applied(ball.get_pos(), ball.get_mass())
+            total_accel += planet.accel_applied(ball.get_center(), 
+                                                ball.get_mass())
         
         return total_accel        
     
@@ -141,17 +151,20 @@ class Ball(pygame.sprite.Sprite):
         """Sets speed within bounds defined by _MAX_SPD.
         """    
         #0->x, 1 ->y. Sets for both cartesian coordinates
-        for i in range(0,2):
-            if new_spd[i] < -self._MAX_SPD:
-                #below -max, set to -max
-                self._spd[i] = -self._MAX_SPD
-            elif new_spd[i] > self._MAX_SPD:
-                #Above max, set to max
-                self._spd[i] = self._MAX_SPD
-            else:
-                #Within bounds, can set to given val
-                self._spd[i] = new_spd[i]     
-                
+        if self._stopped:
+            self._spd = pygame.Vector2(0,0)
+        else:
+            for i in range(0,2):
+                if new_spd[i] < -self._MAX_SPD:
+                    #below -max, set to -max
+                    self._spd[i] = -self._MAX_SPD
+                elif new_spd[i] > self._MAX_SPD:
+                    #Above max, set to max
+                    self._spd[i] = self._MAX_SPD
+                else:
+                    #Within bounds, can set to given val
+                    self._spd[i] = new_spd[i]     
+                    
     def _set_pos(self, new_pos: 'pygame.Vector2'):
         """Unsure if we'll bind it in the window, or if we'll cause a reset. 
         TBD if we need this, keeping this here to remember it."""
@@ -175,20 +188,21 @@ class Ball(pygame.sprite.Sprite):
         """Update image of the sprite depending on 
         the sprite's annimation speed. Anim. spd. depends on ball spd(TODO)
         """
-        #Update sprite_sheet_location depending on anim_speed:
-        #TODO: could make anim_speed depend on object speed somehow?
-        self._anim_tick += 1
-        if self._anim_tick == self._ANIM_SPEED:
-            self._cur_offset += 1
-            #Wrap back to first sprite at end of spritesheet
-            if self._cur_offset == len(self._SHEET_OFFSETS):
-                self._cur_offset = 0              
-            #Update image from spritesheet:
-            self.image = self._sheet.image_at(pygame.Rect(
-                              self._SHEET_OFFSETS[self._cur_offset], 
-                              (self._SIZE, self._SIZE)))    
-            
-            self._anim_tick = 0    
+        if self._stopped != True:
+            #Update sprite_sheet_location depending on anim_speed:
+            #TODO: could make anim_speed depend on object speed somehow?
+            self._anim_tick += 1
+            if self._anim_tick == self._ANIM_SPEED:
+                self._cur_offset += 1
+                #Wrap back to first sprite at end of spritesheet
+                if self._cur_offset == len(self._SHEET_OFFSETS):
+                    self._cur_offset = 0              
+                #Update image from spritesheet:
+                self.image = self._sheet.image_at(pygame.Rect(
+                                  self._SHEET_OFFSETS[self._cur_offset], 
+                                  (self._SIZE, self._SIZE)))    
+                
+                self._anim_tick = 0    
         
     
     def _draw(self) -> None:
@@ -237,5 +251,18 @@ class Ball(pygame.sprite.Sprite):
         return pygame.Vector2(self._pos.x + width / 2, 
                               self._pos.y +  height / 2)   
     
-    ##Debug functions
-
+    ##Mutators
+    def stop(self):
+        """Stops the ball's movement, and animation"""
+        self._stopped = True
+        
+    def place_ball(self, x:int, y:int):
+        """Places the ball in the level, initially with no motion"""
+        self.stop()
+        self._pos = pygame.math.Vector2(x, y)
+    
+    def shoot(self, ini_spd: 'pygame.Vector2'):
+        """Shoots the ball by giving it an initial speed"""
+        self._spd = ini_spd
+        self._stopped = False
+        

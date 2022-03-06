@@ -4,13 +4,12 @@ from planets import Planet
 from net import Net
 from ball import Ball
 from shooting import Shooting
-import pdb
 
 import pathlib
 import random
 import os
 import pdb
-from SpriteSheet import SpriteSheet 
+from spriteSheet import SpriteSheet 
 import time #For debug slowing down
 
 
@@ -22,11 +21,23 @@ class SpaceJam:
         self.net = None
         self.level = 3 
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
+
         self.shooter = Shooting(
             game,
             power_bar= pygame.transform.scale(pygame.image.load(self.util_folder_path+'arrow.png'),(2, 100)),
             arrow = pygame.transform.scale(pygame.image.load(self.util_folder_path+'real_arrow.png'), (100,100))
         )
+
+        #Reset Button
+        self.reset_button = Button(
+            game=game,
+            x=self.game.xBound-150,
+            y=15,
+            text="Score",
+            color=(255,165,0),
+            text_size=30
+        )
+
         #PLACE BALL, store in sprite group
         ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
         self.ball = Ball(game, ball_sheet, 0,0,)
@@ -46,10 +57,13 @@ class SpaceJam:
                 self.shooter.set_up_pos(self.game.UP_MOUSE_POS) 
             elif self.game.DOWN_MOUSE_POS:
                 self.shooter.set_down_pos(self.game.DOWN_MOUSE_POS, self.ball._pos) 
+                if self.reset_button.is_clicked(self.game.DOWN_MOUSE_POS):
+                    self.finish_level()
+
             if self.game.QUITKEY:
                 self.game.running = False 
                 pygame.quit()
-            
+
             self.update_display() 
             self.game.clock.tick(60)
     
@@ -90,33 +104,49 @@ class SpaceJam:
 
             planet_image = pygame.image.load(self.util_folder_path+'/planets/'+random.choice(os.listdir(self.util_folder_path+'/planets/')))  #Randomly picks a planet image
             
-            if minx < self.game.xBound - 100:  #Change the 100 to a non hardcoded value 
+
+            if minx > self.game.xBound/2-100 and minx < self.game.xBound+100:
+                minx = self.game.xBound+100
+            elif minx<self.game.xBound-100:
                 minx+=inc
             else:
                 minx=0
             
             ##Uses simple planet models atm
-#             self.planets.append(self.create_planet(random.randint(1, 3), 
-#                                               x_position, y_position))
-            self.planets.append(Planet(
-                game=self.game,
-                image=planet_image,
-                size = 100,
-                x_pos=x_position,
-                y_pos=y_position
-            ))
-            
+
+
+            self.planets.append(self.create_planet(random.randint(1, 3), 
+                                              x_position, y_position))
+            # self.planets.append(Planet(
+            #     game=self.game,
+            #     image=planet_image,
+            #     size = 100,
+            #     x_pos=x_position,
+            #     y_pos=y_position
+            # ))
+       
                 
         #PLACE NET
         self.net = Net(game, 75, self.planets[random.randint(0, len(self.planets)-1)], 'NORTH')
+
+        # self.net = Net(game, 75, self.planets[-1], 'NORTH')
+
         
     def clear_level(self):
         self.planets = []
+    
+    def draw_level(self):
+        font = self.game.font
+        level = font.render("Level: "+str(self.level), True, (255,255,255))
+        self.game.draw(level, self.game.xBound/2-150, 10)
 
     def finish_level(self):
         """Called when a user finishes a level
         """
         self.clear_level()
+        self.level+=1
+        self.create_level(self.level)
+
     
     def update_planets(self):
         for planet in self.planets:
@@ -147,6 +177,8 @@ class SpaceJam:
         self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
         self.update_shooter()
+        self.reset_button.draw_button()
+        self.draw_level()
         pygame.display.update()
     
 if __name__ == "__main__":
