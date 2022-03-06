@@ -17,7 +17,6 @@ class Planet(pygame.sprite.Sprite):
         #self.image = image   #Std. image storing
         #A way to scale images later:
         self.image = pygame.transform.scale(image, (size, size))
-
         
         self._pos = pygame.Vector2(x_pos, y_pos)
         
@@ -54,7 +53,6 @@ class Planet(pygame.sprite.Sprite):
 
         return pygame.math.Vector2(grav_mag * grav_dir.x, 
                                    grav_mag * grav_dir.y)
-    
 
     @staticmethod
     def pythag(pos1: 'pygame.Vector2', pos2:'pygame.Vector2') -> float:
@@ -71,8 +69,6 @@ class Planet(pygame.sprite.Sprite):
         """Draws the planet on the screen
         """
         self.game.screen.blit(self.image, (self._pos.x, self._pos.y))
-        #pygame.draw.circle(self.game.screen, (0,0,0), 
-                           #self.get_center(), self.radius)
                    
     ##Accessors        
     def get_mass(self) -> int:

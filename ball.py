@@ -39,7 +39,6 @@ class Ball(pygame.sprite.Sprite):
         #Store animation fields
         self._ANIM_SPEED = 35 #Number of ticks between animations
         self._anim_tick = 0
-       
         
         #set initial pos, spd, accel
         self._pos = pygame.Vector2(ini_x,ini_y)
@@ -53,7 +52,7 @@ class Ball(pygame.sprite.Sprite):
         #Set max spd/accel (absolute val. Set high to "uncap")
         self._MAX_SPD = 3
         self._MAX_ACCEL  = 1
-        self._MIN_ACCEL  = 0.1 #UNIMPLEMENTED
+        self._MIN_ACCEL  = 0.1 #TODO: implment in setter(?) or remove
         
         #Store game screen
         self._game = game
@@ -62,6 +61,7 @@ class Ball(pygame.sprite.Sprite):
     def _collide_circle(self, other):
         #print("Col check")
         return pygame.sprite.collide_circle(self, other)
+
     def _collide_rect(self, other):
         #print("Col check")
         return pygame.sprite.collide_rect(self, other)    
@@ -171,7 +171,7 @@ class Ball(pygame.sprite.Sprite):
         #Update accel (sum of forces) -> update spd -> update position
         self._set_accel(self._sum_acceleration(planets))
         self._set_spd(self._spd + self._accel)
-        #Collision check overrides speed on rebounds
+        #Collision check overrides speed on rebounds: Could be useful to set to 0 later.
         scored = self._check_collisions(planets, net)
         self._pos += self._spd
         

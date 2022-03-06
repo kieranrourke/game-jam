@@ -16,6 +16,7 @@ class SpaceJam:
         self.game = game
         self.planets = []
         self.ball = None
+        self.net = None
         self.level = 8 #has to be 8?
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
 
@@ -24,9 +25,12 @@ class SpaceJam:
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
-            self.game.running = False if self.game.QUITKEY else True
             
-            time.sleep(0.002) #determines game speed in sec delay
+            if self.game.QUITKEY:
+                self.game.running = False
+                pygame.quit()
+            
+            time.sleep(0.01) #determines game speed in sec delay
             
             self.update_display() 
     
@@ -59,7 +63,7 @@ class SpaceJam:
         minx = 0  #Offset to stop a lot of planets from spawning together
         inc = self.game.xBound/level
         #print(inc)
-        for i in range(1):
+        for i in range(level):
             x_position = random.randint(minx, i*100) 
             if i % 2 == 0:
                 y_position = random.randint(100, self.game.yBound/2-100)
@@ -73,19 +77,24 @@ class SpaceJam:
             else:
                 minx=0
             
-            self.planets.append(self.create_planet(random.randint(1, 3), 
-                                              x_position, y_position))
+            ##Uses simple planet models atm
+#             self.planets.append(self.create_planet(random.randint(1, 3), 
+#                                               x_position, y_position))
+            self.planets.append(Planet(
+                game=self.game,
+                image=planet_image,
+                size = 100,
+                x_pos=x_position,
+                y_pos=y_position
+            ))
             
         #PLACE BALL, store in sprite group
         ball_sheet = SpriteSheet(self.util_folder_path+'ball_sheet.png')
-        self.ball = Ball(game, ball_sheet, 50,0,)
+        self.ball = Ball(game, ball_sheet, 0,0,)
         
         #PLACE NET
         self.net = Net(game, 75, self.planets[0], 'NORTH')
-
-    
-
-
+        
     def clear_level(self):
         pass
 
@@ -111,7 +120,6 @@ class SpaceJam:
         self.update_ball() #Order matters, determines foreground/background
         self.update_planets()
         pygame.display.update()
-
     
 if __name__ == "__main__":
     util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
@@ -120,9 +128,7 @@ if __name__ == "__main__":
         yBound=800,
         caption="Space Jam",
         icon=pygame.image.load(util_folder_path+"icon.png"),
-        background=pygame.image.load(util_folder_path+"background.jpeg")
+        background=pygame.image.load(util_folder_path+"space.png")
     )
     spacejam = SpaceJam(game)
     spacejam.game_loop()
-    
-    
