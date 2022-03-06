@@ -7,7 +7,7 @@ import pathlib
 import random
 import os
 import pdb
-from SpriteSheet import SpriteSheet 
+from spriteSheet import SpriteSheet 
 import time #For debug slowing down
 
 
@@ -25,13 +25,37 @@ class SpaceJam:
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
+            
             if self.game.QUITKEY:
                 self.game.running = False
                 pygame.quit()
             
-            time.sleep(0.01)
+            time.sleep(0.01) #determines game speed in sec delay
             
             self.update_display() 
+    
+    def create_planet(self, planet: int, x_position, y_position):
+        """Chooses a planet size to create from the predifined planets, 
+        at the given position. Valid planet sizes are 1, 2, or 3. 
+        invalid inputs default to 3"""
+        #Create planet types, increase in size with number:
+        
+        if planet == 1: #smallest planet, size/image hardcoded
+            planet_image = pygame.image.load(self.util_folder_path+
+                                             '/planets/planet_32.png')
+            SIZE = 32
+            
+        elif planet == 2:
+            planet_image = pygame.image.load(self.util_folder_path+
+                                             '/planets/planet_64.png')
+            SIZE = 64  
+            
+        else:
+            planet_image = pygame.image.load(self.util_folder_path+
+                                             '/planets/planet_128.png')
+            SIZE = 128
+            
+        return Planet(self.game, planet_image, SIZE, x_position, y_position) 
         
     def create_level(self, level):
         #PLACE PLANETS, store in sprite group
@@ -53,6 +77,9 @@ class SpaceJam:
             else:
                 minx=0
             
+            ##Uses simple planet models atm
+#             self.planets.append(self.create_planet(random.randint(1, 3), 
+#                                               x_position, y_position))
             self.planets.append(Planet(
                 game=self.game,
                 image=planet_image,
@@ -85,13 +112,13 @@ class SpaceJam:
         scored = self.ball.update(self.planets, self.net)
         
     def update_net(self):
-        self.net.update()
+        self.net.update()    
     
     def update_display(self):
         self.game.resetKeys()
-        self.update_planets()
-        self.update_ball()
         self.update_net()
+        self.update_ball() #Order matters, determines foreground/background
+        self.update_planets()
         pygame.display.update()
     
 if __name__ == "__main__":

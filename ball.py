@@ -79,11 +79,17 @@ class Ball(pygame.sprite.Sprite):
                 self.rebound(planet)
         
         #check net collision TODO:
-        #something like for solid in net, rebound. After: check for goal 
-        #for 
-        #return bool for scored
-            
-        return False
+        for solid in net.get_solids():
+            if self._collide_rect(solid):
+                self.rebound(solid)
+        
+        #Returns True if ball in net
+        scored = self._collide_rect(net.get_mesh())
+        if scored:
+            print("scored, reset level!")
+        else:
+            print("not scored :(")
+        return scored
 
     #def _radial_edge(self, direction: 'pygame.Vector2'):
         #"""Returns a point on the edge of the ball's radius
@@ -92,7 +98,7 @@ class Ball(pygame.sprite.Sprite):
         #return Vector2(self._pos.x+ self.radius*direction.x,
                        #self._pos.y+ self.radius*direction.y)
     
-    def rebound(self, collision: 'Sprite') -> None:
+    def rebound(self, collision: 'pygame.Sprite') -> None:
         """Bounces ball back from collision point with amortised speed.
         Speed depends on mass difference between objects (UNIMPLEMENTED).
         Thinking of also setting position to edge of other object... 
