@@ -19,7 +19,7 @@ class SpaceJam:
         self.planets = []
         self.ball = None
         self.net = None
-        self.level = 8 #has to be 8?
+        self.level = 3 
         self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
         self.shooter = Shooting(
             game,
@@ -72,10 +72,9 @@ class SpaceJam:
         #PLACE PLANETS, store in sprite group
         self.planets = []
         minx = 0  #Offset to stop a lot of planets from spawning together
-        inc = self.game.xBound/level
-        #print(inc)
+        inc = int(self.game.xBound/level)
         for i in range(level):
-            x_position = random.randint(minx, i*100) 
+            x_position = random.randint(minx, minx+100)
             if i % 2 == 0:
                 y_position = random.randint(100, self.game.yBound/2-100)
             else:
@@ -101,10 +100,10 @@ class SpaceJam:
             
                 
         #PLACE NET
-        self.net = Net(game, 75, self.planets[0], 'NORTH')
+        self.net = Net(game, 75, self.planets[random.randint(0, len(self.planets)-1)], 'NORTH')
         
     def clear_level(self):
-        pass
+        self.planets = []
 
     def finish_level(self):
         """Called when a user finishes a level
@@ -115,9 +114,16 @@ class SpaceJam:
         for planet in self.planets:
             planet.draw_planet()
     
-    def update_ball(self):
+    def update_ball(self) -> bool:
+        """updates ball and tracks if player has scored
+
+        Returns:
+            bool: _description_
+        """
+
         #Uses planets for acceleration
-        scored = self.ball.update(self.planets, self.net)
+        if self.ball.update(self.planets, self.net):
+            self.finish_level()
         
     def update_net(self):
         self.net.update() 
