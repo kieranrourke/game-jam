@@ -6,12 +6,11 @@ __author__ = 'Nucleus team'
 
 import pygame
 import math
-import pathlib
 
 class Ball(pygame.sprite.Sprite):
     ##Eventually, should not need planets as a field
     def __init__(self, game: 'Game', sheet: 'SpriteSheet', 
-                 ini_x: int, ini_y: int, 
+                 ini_x: int, ini_y: int, util_folder_path, 
                  size: int = 32) -> None: 
         """ Initiates a ball object with initial speed or acceleration, 
         initial pos based on params.
@@ -61,7 +60,7 @@ class Ball(pygame.sprite.Sprite):
         self._game = game
 
         #Music
-        self.util_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/'
+        self.util_folder_path = util_folder_path
 
         self.wall_hit_sound = pygame.mixer.Sound(self.util_folder_path+'wall_hit.wav')
         self.wall_hit_sound.set_volume(0.2)
@@ -295,7 +294,3 @@ class Ball(pygame.sprite.Sprite):
             self._spd = pygame.Vector2(self._spd[0], -self._spd[1])
         else:
             self._spd = pygame.Vector2(-self._spd[0], self._spd[1])
-
-
-
-        

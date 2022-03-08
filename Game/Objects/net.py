@@ -1,7 +1,5 @@
 import pygame
 import pathlib
-from planets import Planet
-from game import Game    
 
 
 class rectSprite(pygame.sprite.Sprite):
@@ -33,14 +31,14 @@ class rectSprite(pygame.sprite.Sprite):
 
 class Net():
 
-    def __init__(self, game, hgt: int, planet: Planet, direction: str)-> None:
+    def __init__(self, game, hgt: int, planet: "Planet", direction: str, util_folder_path)-> None:
         #Attributes
         self.game = game
         ##Would be cool if net could be one surface we can rotate with transform
         #self._net_surface = pygame.Surface((100,100))
         self.planet = planet
         self.direction = direction
-        self.img_folder_path = str(pathlib.Path(__file__).parent.absolute()) +'/Utils/Net'
+        self.img_folder_path = util_folder_path +'Net/'
 
         # Size constants for each net element
         POLE_WIDTH = 14

@@ -1,5 +1,4 @@
 import pygame
-from game import Button
 
 
 class Menu():

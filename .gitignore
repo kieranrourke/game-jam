@@ -9,3 +9,5 @@ cpython-39.pyc
 __pycache__/ball.cpython-39.pyc
 __pycache__/game.cpython-39.pyc
 __pycache__/planets.cpython-39.pyc
+__pycache__/ball.cpython-39.pyc
+*.pyc

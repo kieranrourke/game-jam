@@ -1,5 +1,4 @@
 import pygame
-import pdb
 import math
 
 class Shooting:
