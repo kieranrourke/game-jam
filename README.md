@@ -23,5 +23,7 @@ or
 ## Contributors
 
 Kieran Rourke -- https://www.linkedin.com/in/kieran-rourke-9087481a4/
-Alex
-Cade
+
+Alex --
+
+Cade --
