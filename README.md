@@ -13,6 +13,9 @@ Python 3.7.4 or later must be installed
 https://www.python.org/downloads/
 
 The Pygame library is also required to install run
-pip install pygame
+
+<pre><code>pip install pygame</code></pre>
+
 or
-py -m pip install pygame
+
+<pre><code>py -m pip install pygame</code></pre>
