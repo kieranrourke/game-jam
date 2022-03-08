@@ -1,4 +1,4 @@
-# game-jam spacejam
+# IEEE game-jam
 
 ## Description
 
@@ -19,3 +19,9 @@ The Pygame library is also required to install run
 or
 
 <pre><code>py -m pip install pygame</code></pre>
+
+## Contributors
+
+Kieran Rourke -- https://www.linkedin.com/in/kieran-rourke-9087481a4/
+Alex
+Cade
