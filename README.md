@@ -26,4 +26,4 @@ Kieran Rourke -- https://www.linkedin.com/in/kieran-rourke-9087481a4/
 
 Alexandre Marques -- https://www.linkedin.com/in/alexandre-marques-b218ba22a
 
-Cade --
+Cade Theriault -- https://www.linkedin.com/in/cade-theriault-b12bb4211/
