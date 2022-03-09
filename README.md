@@ -24,6 +24,6 @@ or
 
 Kieran Rourke -- https://www.linkedin.com/in/kieran-rourke-9087481a4/
 
-Alexandre Marques -- linkedin.com/in/alexandre-marques-b218ba22a
+Alexandre Marques -- https://www.linkedin.com/in/alexandre-marques-b218ba22a
 
 Cade --
