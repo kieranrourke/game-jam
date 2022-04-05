@@ -62,10 +62,14 @@ class Ball(pygame.sprite.Sprite):
         #Music
         self.util_folder_path = util_folder_path
 
-        self.wall_hit_sound = pygame.mixer.Sound(self.util_folder_path+'wall_hit.wav')
-        self.wall_hit_sound.set_volume(0.2)
-        self.score_sound = pygame.mixer.Sound(self.util_folder_path+'score_sound.mp3')
-        self.score_sound.set_volume(0.2)
+        try:
+            self.wall_hit_sound = pygame.mixer.Sound(self.util_folder_path+'wall_hit.wav')
+            self.wall_hit_sound.set_volume(0.2)
+            self.score_sound = pygame.mixer.Sound(self.util_folder_path+'score_sound.mp3')
+            self.score_sound.set_volume(0.2)
+        except pygame.error:
+            self.wall_hit_sound = None
+            self.score_sound = None
     
     ##Collision logic
     def _collide_circle(self, other):
@@ -231,7 +235,7 @@ class Ball(pygame.sprite.Sprite):
         """
         scored = self._update_pos(planets, net) 
         self._draw()
-        if scored:
+        if scored and self.score_sound is not None:
             self.score_sound.play()
         return scored
         
@@ -289,7 +293,8 @@ class Ball(pygame.sprite.Sprite):
            self.collision(vertical=True) 
     
     def collision(self, vertical=False):
-        self.wall_hit_sound.play()
+        if self.wall_hit_sound is not None:
+            self.wall_hit_sound.play()
         if vertical:
             self._spd = pygame.Vector2(self._spd[0], -self._spd[1])
         else:

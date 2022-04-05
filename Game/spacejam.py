@@ -70,9 +70,13 @@ class SpaceJam:
         self.game_loop()
 
     def game_loop(self):
-        pygame.mixer.music.load(self.util_folder_path+'background.mp3')
-        pygame.mixer.music.set_volume(0.1)
-        pygame.mixer.music.play(-1)
+        try:
+            pygame.mixer.music.load(self.util_folder_path+'background.mp3')
+            pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.play(-1)
+        except pygame.error:
+            pass
+
         while self.game.running:
             self.game.setMisc()
             self.game.checkEvents()
